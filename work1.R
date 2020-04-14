@@ -1,6 +1,7 @@
 #### work file 1
 
 library(tidyverse)
+library(stringr)
 
 rm(list = ls())
 
