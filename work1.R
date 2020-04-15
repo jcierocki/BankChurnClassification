@@ -8,6 +8,8 @@ library(GGally)
 # library(ranger)
 
 rm(list = ls())
+
+source("funs.R")
   
 data_raw <- read_csv("data/dataset1.csv")
 data1 <- data_raw %>% 
