@@ -33,3 +33,4 @@ ggplot(data1, aes(x = Exited, y = Age)) + geom_violin()
 plot_freq(data1, "Geography")
 data1 <- data1 %>% mutate(NotSpain = as.factor(map_chr(Geography, ~ ifelse(.x == "Spain", "No", "Yes"))))
 plot_freq(data1, "NotSpain")
+##zz
