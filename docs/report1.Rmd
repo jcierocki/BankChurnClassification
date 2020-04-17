@@ -4,27 +4,10 @@ author: "Jakub Cierocki"
 date: "14 04 2020"
 output: pdf_document
 ---
+WPROWADZENIE
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+Rozważania na temat "customer churn", czyli zakończenie współpracy klienta z przedsiębiorstwem było w kręgu zainteresowania naukowców od wielu lat. Firmy, w szczególności banki są zainteresowane takimi klientami i analizowaniem ich zachowania, gdyż pozyskiwania nowych klientów zwykle jest o wiele droższym zabiegiem, niż utrzymanie dotychczasowych. Przykładowo, jeśli Spotify zidentyifkowałby segment osób, które byłyby obciążone ryzykiem churnowania, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich usług.
 
-## R Markdown
+Kolejnym argumentem potwierdzającym znaczenie badania jest ryzyko powielającej się zależności, która powoduje długotrwałą strate klientów, której przedsiębiorstwo mogłoby uniknąć, analizując zachowania oraz cechy klientów w grupie ryzyka.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+W ninejszym raporcie zbadamy, jakie czynniki wpływają na decyzję klienta w przyadku zmiany banku. Skupimy się na czynnikach ekonomicznych, ale również aspektach psychofizycznych, które będą znacząco wpływać na wynik badanego przez nas zagadnienia.
