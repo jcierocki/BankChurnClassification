@@ -1,13 +1,18 @@
 ---
-title: "IRD Report - Churn Modelling"
+title: "Churn modeling - problem klasyfikacji klienta banku"
 author: "Jakub Cierocki"
 date: "14 04 2020"
 output: pdf_document
 ---
-WPROWADZENIE
 
-Rozważania na temat "customer churn", czyli zakończenie współpracy klienta z przedsiębiorstwem było w kręgu zainteresowania naukowców od wielu lat. Firmy, w szczególności banki są zainteresowane takimi klientami i analizowaniem ich zachowania, gdyż pozyskiwania nowych klientów zwykle jest o wiele droższym zabiegiem, niż utrzymanie dotychczasowych. Przykładowo, jeśli Spotify zidentyifkowałby segment osób, które byłyby obciążone ryzykiem churnowania, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich usług.
+# Wprowadzenie
 
-Kolejnym argumentem potwierdzającym znaczenie badania jest ryzyko powielającej się zależności, która powoduje długotrwałą strate klientów, której przedsiębiorstwo mogłoby uniknąć, analizując zachowania oraz cechy klientów w grupie ryzyka.
+Zjawisko tzw "customer churn" (\textit{churn} - ang. odpływ, rezygnacja), czyli rezygnacji klienta ze  współpracy z przedsiębiorstwem, jest w kręgu zainteresowania naukowców od wielu lat. Wiąże się z nim kilka różnych problemów analitycznych, m.in. prognozowanie dynamiki liczby klientów oraz klasyfikacja indywidualnego klienta (czy zrezygnuje?).
 
-W ninejszym raporcie zbadamy, jakie czynniki wpływają na decyzję klienta w przyadku zmiany banku. Skupimy się na czynnikach ekonomicznych, ale również aspektach psychofizycznych, które będą znacząco wpływać na wynik badanego przez nas zagadnienia.
+Firmy, a w szczególności banki, inwestują mocno w modelowanie tego zjawiska, gdyż pozyskiwanie nowych klientów jest często o wiele droższym zabiegiem, niż utrzymanie dotychczasowych, a dynamika ich liczby jest kluczowa przy modelowaniu procesów biznesowych. Przykładowo, jeśli Spotify (dostawca usługi streamowania muzyki) zidentyfikowałoby segment osób, które z dużym prawdopobieństwem zrezygnują niedługo z subskrypcji, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich oferty. Z drugiej strony powiązanie nielojalności konsumenckiej z atrybutami konkretnej podgrupy klientów może pomóc w racjonalizacji kosztów przeznaczonych na reklamę i projektowanie produktów przeznaczonych dla jej przedstawicieli.
+
+W niniejszym raporcie zbadamy, jak cechy klienta są powiązane z podjęciem przez niego decyzji o zmianie dostawcy usług bankowych. Na analizowane przez nas czynniki składają się atrybuty charakteryzującego samego klienta jak i jego dotychczasową współpracę z bankiem.
+
+# Problem badawczy
+
+Zjawisko "churnu" będziemy analizować z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Problem badawczy, jaki chcemy przeanalizować to czy na podstawie tych danych bank jest w stanie z dużym prawdobieństwem przewidzieć potencjalną decyzję klienta o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
