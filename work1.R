@@ -1,4 +1,4 @@
-#### work file 1
+/#### work file 1
 
 library(tidyverse)
 library(stringr)
@@ -33,3 +33,14 @@ ggplot(data1, aes(x = Exited, y = Age)) + geom_violin()
 plot_freq(data1, "Geography")
 data1 <- data1 %>% mutate(NotSpain = as.factor(map_chr(Geography, ~ ifelse(.x == "Spain", "No", "Yes"))))
 plot_freq(data1, "NotSpain")
+#Kod smbinning - sprawdzone iv
+install.packages("smbinning")
+library("smbinning")
+data1_dataframe <- as.data.frame(data1)
+data1_dataframe$Exited<-as.numeric(data1$Exited)
+data1_dataframe$Exited<-as.integer(data1_dataframe$Exited)-1
+result <- smbinning(df=data1_dataframe,y="Exited",x="Age",p=0.05)
+result #wynik dla age
+result2 <- smbinning(df=data1_dataframe,y="Exited",x="CreditScore",p=0.05)
+result2 # wynik dla creditscore
+ 
