@@ -1,16 +1,17 @@
-/#### work file 1
+#### work file 1
 
 library(tidyverse)
 library(stringr)
 library(ggplot2)
 library(GGally)
-# library(caret)
-# library(ranger)
+library(scorecard)
+library(caret)
+library(ranger)
 
 rm(list = ls())
 
 source("funs.R")
-  
+
 data_raw <- read_csv("data/dataset1.csv")
 data1 <- data_raw %>% 
   mutate(Geography = factor(Geography), Gender = factor(Gender), 
@@ -33,14 +34,19 @@ ggplot(data1, aes(x = Exited, y = Age)) + geom_violin()
 plot_freq(data1, "Geography")
 data1 <- data1 %>% mutate(NotSpain = as.factor(map_chr(Geography, ~ ifelse(.x == "Spain", "No", "Yes"))))
 plot_freq(data1, "NotSpain")
-#Kod smbinning - sprawdzone iv
-install.packages("smbinning")
-library("smbinning")
-data1_dataframe <- as.data.frame(data1)
-data1_dataframe$Exited<-as.numeric(data1$Exited)
-data1_dataframe$Exited<-as.integer(data1_dataframe$Exited)-1
-result <- smbinning(df=data1_dataframe,y="Exited",x="Age",p=0.05)
-result #wynik dla age
-result2 <- smbinning(df=data1_dataframe,y="Exited",x="CreditScore",p=0.05)
-result2 # wynik dla creditscore
- 
+
+iv(data1, "Exited", "Geography", positive = "No")
+iv(data1, "Exited", "NotSpain", positive = "No")
+
+opt_bin <- woebin(data1, "Exited", "Age", positive = "No")#[[1]]$breaks
+opt_bin2 <- woebin(data1,"Exited","Balance",positive = "No")
+opt_bin3 <- woebin(data1,"Exited","CreditScore",positive = "No")
+opt_bin4 <- woebin(data1,"Exited","NumOfProducts",positive = "No")
+opt_bin5 <- woebin(data1,"Exited","EstimatedSalary",positive = "No")
+opt_bin6 <- woebin(data1,"Exited","Tenure",positive = "No")
+data2 <- data1 %>% woebin_ply(opt_bin, to = "bin") %>% mutate(Age_bin =as.factor(Age_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin2, to = "bin") %>% mutate(Balance_bin = as.factor(Balance_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin3, to = "bin") %>% mutate(CreditScore_bin = as.factor(CreditScore_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin4, to = "bin") %>% mutate(NumOfProducts_bin = as.factor(NumOfProducts_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin5, to = "bin") %>% mutate(EstimatedSalary_bin = as.factor(EstimatedSalary_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin6, to = "bin") %>% mutate(Tenure_bin =as.factor(Tenure_bin))
