@@ -1,10 +1,11 @@
 ---
 title: "IRD Report - Churn Modelling"
-author: "Jakub Cierocki"
+author: "Jakub Cierocki & Szymon Reddig"
 date: "14 04 2020"
 output: pdf_document
 ---
-WPROWADZENIE
+
+## WPROWADZENIE
 
 Rozważania na temat "customer churn", czyli zakończenie współpracy klienta z przedsiębiorstwem było w kręgu zainteresowania naukowców od wielu lat. Firmy, w szczególności banki są zainteresowane takimi klientami i analizowaniem ich zachowania, gdyż pozyskiwania nowych klientów zwykle jest o wiele droższym zabiegiem, niż utrzymanie dotychczasowych. Przykładowo, jeśli Spotify zidentyifkowałby segment osób, które byłyby obciążone ryzykiem churnowania, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich usług.
 
