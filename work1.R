@@ -5,14 +5,14 @@ library(stringr)
 library(ggplot2)
 library(GGally)
 library(scorecard)
-library(funModeling)
-# library(caret)
-# library(ranger)
+library(caret)
+library(ranger)
+
 
 rm(list = ls())
 
 source("funs.R")
-  
+
 data_raw <- read_csv("data/dataset1.csv")
 data1 <- data_raw %>% 
   mutate(Geography = factor(Geography), Gender = factor(Gender), 
@@ -41,17 +41,14 @@ iv(data1, "Exited", "NotSpain", positive = "No")
 
 opt_bin <- woebin(data1, "Exited", "Age", positive = "No")#[[1]]$breaks
 
-data2 <- data1 %>% mutate(Age_bin2 = discretize_rgr(Age, Exited, max_n_bins = 6))
-data2 <- data2 %>% woebin_ply(opt_bin, to = "bin") %>% mutate(Age_bin = as.factor(Age_bin))
-
-# opt_bin2 <- discretize_get_bins(data1, 4, input = "Age")
-
-head(data2$Age_bin2)
-plot(data2$Age_bin)
-plot(data2$Age_bin2)
-
-iv(data2, y = "Exited", positive = "No")
-
-#### łączenie zmiennych w celu uzyskania zbliżonej liczby kategorii (nieobciążone oceny ważności parametrów i IV)
-
-# dodałem funkcję w pliku funs.R
+opt_bin2 <- woebin(data1,"Exited","Balance",positive = "No")
+opt_bin3 <- woebin(data1,"Exited","CreditScore",positive = "No")
+opt_bin4 <- woebin(data1,"Exited","NumOfProducts",positive = "No")
+opt_bin5 <- woebin(data1,"Exited","EstimatedSalary",positive = "No")
+opt_bin6 <- woebin(data1,"Exited","Tenure",positive = "No")
+data2 <- data1 %>% woebin_ply(opt_bin, to = "bin") %>% mutate(Age_bin =as.factor(Age_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin2, to = "bin") %>% mutate(Balance_bin = as.factor(Balance_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin3, to = "bin") %>% mutate(CreditScore_bin = as.factor(CreditScore_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin4, to = "bin") %>% mutate(NumOfProducts_bin = as.factor(NumOfProducts_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin5, to = "bin") %>% mutate(EstimatedSalary_bin = as.factor(EstimatedSalary_bin)) 
+data2 <- data2 %>% woebin_ply(opt_bin6, to = "bin") %>% mutate(Tenure_bin =as.factor(Tenure_bin))
