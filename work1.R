@@ -8,6 +8,7 @@ library(scorecard)
 library(caret)
 library(ranger)
 
+
 rm(list = ls())
 
 source("funs.R")
@@ -39,6 +40,7 @@ iv(data1, "Exited", "Geography", positive = "No")
 iv(data1, "Exited", "NotSpain", positive = "No")
 
 opt_bin <- woebin(data1, "Exited", "Age", positive = "No")#[[1]]$breaks
+
 opt_bin2 <- woebin(data1,"Exited","Balance",positive = "No")
 opt_bin3 <- woebin(data1,"Exited","CreditScore",positive = "No")
 opt_bin4 <- woebin(data1,"Exited","NumOfProducts",positive = "No")
