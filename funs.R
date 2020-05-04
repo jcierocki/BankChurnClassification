@@ -18,3 +18,15 @@ plot_freq <- function(df, fac_var, target = "Exited") {
     scale_y_continuous(sec.axis = sec_axis(trans = ~ . / multi)) +
     xlab("Country")
 }
+
+merge_factor_vars <- function(var1, ...) {
+  UseMethod("merge_factor_vars", var1)
+}
+
+merge_factor_vars.factor <- function(var1, ...) {
+  factor(str_c(var1, ...))
+}
+
+merge_factor_vars.tbl <- function(var1, ...) {
+  do.call(function(...) factor(str_c(...)), as.list(var1))
+}
