@@ -51,4 +51,3 @@ data2 <- data2 %>% woebin_ply(opt_bin4, to = "bin") %>% mutate(NumOfProducts_bin
 data2 <- data2 %>% woebin_ply(opt_bin5, to = "bin") %>% mutate(EstimatedSalary_bin = as.factor(EstimatedSalary_bin)) 
 data2 <- data2 %>% woebin_ply(opt_bin6, to = "bin") %>% mutate(Tenure_bin =as.factor(Tenure_bin))
 
-data1$Balance %>% unique
