@@ -30,3 +30,21 @@ merge_factor_vars.factor <- function(var1, ...) {
 merge_factor_vars.tbl <- function(var1, ...) {
   do.call(function(...) factor(str_c(...)), as.list(var1))
 }
+
+factorize <- function(df) {
+  fct_cols <- colnames(df)[data1 %>% map_lgl(~ !is.factor(.x)) & colnames(df) != "Exited"]
+  bins_tree <- df %>% woebin(y = "Exited", x = fct_cols, positive = "No", bin_num_limit = 5, method = "tree")
+  bins_chimerge <- df %>% woebin(y = "Exited", x = fct_cols, positive = "No", bin_num_limit = 5, method = "chimerge")
+  
+  bins_best <- map2(bins_tree, bins_chimerge, function(x, y) {
+    if(x$total_iv[1] > y$total_iv[1])
+      return(x)
+    else
+      return(y)
+  })
+  
+  df %>% woebin_ply(bins = bins_best, to = "bin") %>% 
+    mutate_if(~ !is.factor(.x), as.factor) %>% 
+    rename_all(function(x) map_chr(str_split(x, "_"), ~ .x[1])) %>% 
+    return
+}
