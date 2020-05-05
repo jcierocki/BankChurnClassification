@@ -1,4 +1,4 @@
-#### auxilary functions
+#### auxilary functions concerning data preprocessing linked visualization
 
 plot_freq <- function(df, fac_var, target = "Exited") {
   target_vec <- df %>% pull(target)
