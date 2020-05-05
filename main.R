@@ -6,7 +6,7 @@ library(scorecard)
 
 rm(list = ls())
 
-source("funs.R")
+source("funs_preproc.R")
 
 data_raw <- read_csv("data/dataset1.csv")
 data1 <- data_raw %>% 
@@ -16,4 +16,6 @@ data1 <- data_raw %>%
          HasCrCard = factor(HasCrCard) %>% `levels<-`(c("No", "Yes"))) %>% 
   dplyr::select(-RowNumber, -CustomerId, -Surname)
 
-data2 <- data1 %>% factorize()
+data2 <- data1 %>% factorize() %>% as_tibble() %>% filter_vars_by_iv()
+
+

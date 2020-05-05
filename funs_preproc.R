@@ -31,10 +31,10 @@ merge_factor_vars.tbl <- function(var1, ...) {
   do.call(function(...) factor(str_c(...)), as.list(var1))
 }
 
-factorize <- function(df) {
-  fct_cols <- colnames(df)[data1 %>% map_lgl(~ !is.factor(.x)) & colnames(df) != "Exited"]
-  bins_tree <- df %>% woebin(y = "Exited", x = fct_cols, positive = "No", bin_num_limit = 5, method = "tree")
-  bins_chimerge <- df %>% woebin(y = "Exited", x = fct_cols, positive = "No", bin_num_limit = 5, method = "chimerge")
+factorize <- function(df, y_name = "Exited", y_pos = "No") {
+  fct_cols <- colnames(df)[data1 %>% map_lgl(~ !is.factor(.x)) & colnames(df) != y_name]
+  bins_tree <- df %>% woebin(y = y_name, x = fct_cols, positive = y_pos, bin_num_limit = 5, method = "tree")
+  bins_chimerge <- df %>% woebin(y = y_name, x = fct_cols, positive = y_pos, bin_num_limit = 5, method = "chimerge")
   
   bins_best <- map2(bins_tree, bins_chimerge, function(x, y) {
     if(x$total_iv[1] > y$total_iv[1])
@@ -47,4 +47,13 @@ factorize <- function(df) {
     mutate_if(~ !is.factor(.x), as.factor) %>% 
     rename_all(function(x) map_chr(str_split(x, "_"), ~ .x[1])) %>% 
     return
+}
+
+filter_vars_by_iv <- function(df, significance_thres = 0.02, y_name = "Exited", y_pos = "No") {
+  non_significant_vars <- df %>% 
+    iv(y_name, positive = y_pos) %>% 
+    filter(info_value < significance_thres) %>% 
+    pull(variable)
+  
+  df %>% dplyr::select(-all_of(non_significant_vars)) %>% return
 }
