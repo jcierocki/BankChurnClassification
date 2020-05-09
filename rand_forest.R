@@ -1,4 +1,4 @@
-##### work file 2 - tidymodels + ranger
+##### ranger random forest model
   
 library(tidyverse)
 library(stringr)
