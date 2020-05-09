@@ -31,17 +31,23 @@ merge_factor_vars.tbl <- function(var1, ...) {
   do.call(function(...) factor(str_c(...)), as.list(var1))
 }
 
-factorize <- function(df, y_name = "Exited", y_pos = "No") {
+choose_best_binning <- function(binnings_df) {
+  binnings_df %>% pmap(function(...) {
+    opts <- list(...)
+    best_iv_idx <- opts %>% map_dbl(~ .x$total_iv[1]) %>% which.max()
+
+    opts[[best_iv_idx]]
+  }) %>% return
+}
+
+factorize <- function(df, y_name = "Exited", y_pos = "No", bin_limit = 6, bin_methods = c("tree", "chimerge")) {
   fct_cols <- colnames(df)[data1 %>% map_lgl(~ !is.factor(.x)) & colnames(df) != y_name]
-  bins_tree <- df %>% woebin(y = y_name, x = fct_cols, positive = y_pos, bin_num_limit = 5, method = "tree")
-  bins_chimerge <- df %>% woebin(y = y_name, x = fct_cols, positive = y_pos, bin_num_limit = 5, method = "chimerge")
+  binnings <- bin_methods %>% 
+    map(~ df %>% woebin(y = y_name, x = fct_cols, positive = y_pos, bin_num_limit = bin_limit, method = .x)) %>% 
+    `names<-`(bin_methods) %>% 
+    as_tibble()
   
-  bins_best <- map2(bins_tree, bins_chimerge, function(x, y) {
-    if(x$total_iv[1] > y$total_iv[1])
-      return(x)
-    else
-      return(y)
-  })
+  bins_best <- choose_best_binning(binnings)
   
   df %>% woebin_ply(bins = bins_best, to = "bin") %>% 
     mutate_if(~ !is.factor(.x), as.factor) %>% 

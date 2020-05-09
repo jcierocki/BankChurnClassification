@@ -17,10 +17,15 @@ data1 <- data_raw %>%
          HasCrCard = factor(HasCrCard) %>% `levels<-`(c("No", "Yes"))) %>% 
   dplyr::select(-RowNumber, -CustomerId, -Surname)
 
-data2 <- data1 %>% factorize() %>% as_tibble() %>% filter_vars_by_iv()
+data1 %>% filter_vars_by_iv(significance_thres = 0.02) %>% 
+  initial_split(prop = 0.75) %>%
+  saveRDS("data/split_raw.RDS")
+
+data2 <- data1 %>% 
+  factorize(bin_methods = "tree") %>% 
+  as_tibble() %>% 
+  filter_vars_by_iv(significance_thres = 0.02)
 
 dataset_split <- initial_split(data2, prop = 0.75) %>% saveRDS("data/split.RDS")
 
 rm(list = ls())
-
-
