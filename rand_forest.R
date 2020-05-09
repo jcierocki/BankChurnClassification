@@ -11,10 +11,11 @@ rm(list = ls())
 # source("dataset_prep.R")
 
 dataset_split <- readRDS("data/split.RDS")
+
 df_train <- dataset_split %>% training()
 df_test <- dataset_split %>% testing()
   
-ranger_model_1 <- rand_forest("classification", 2, 500, 5) %>% 
+ranger_model_1 <- rand_forest("classification", 2, 1000, 5) %>% 
   set_engine("ranger", num.threads = 8, replace = F, sample.fraction = 0.8, importance = "impurity") %>%
   # set_engine("ranger", num.threads = 8, replace = F, sample.fraction = 0.8, importance = "permutation", local.importance = T) %>%
   # set_engine("ranger", num.threads = 8) %>%
