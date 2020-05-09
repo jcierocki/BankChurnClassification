@@ -1,6 +1,7 @@
 #### data load and preprocessing
 
 library(tidyverse)
+library(tidymodels)
 library(stringr)
 library(scorecard)
 
@@ -17,5 +18,9 @@ data1 <- data_raw %>%
   dplyr::select(-RowNumber, -CustomerId, -Surname)
 
 data2 <- data1 %>% factorize() %>% as_tibble() %>% filter_vars_by_iv()
+
+dataset_split <- initial_split(data2, prop = 0.75) %>% saveRDS("data/split.RDS")
+
+rm(list = ls())
 
 
