@@ -4,6 +4,7 @@ library(tidyverse)
 library(tidymodels)
 library(stringr)
 library(scorecard)
+library(recipes)
 
 rm(list = ls())
 
@@ -17,15 +18,25 @@ data1 <- data_raw %>%
          HasCrCard = factor(HasCrCard) %>% `levels<-`(c("No", "Yes"))) %>% 
   dplyr::select(-RowNumber, -CustomerId, -Surname)
 
-data1 %>% filter_vars_by_iv(significance_thres = 0.02) %>% 
+data2 <- recipe(Exited ~ ., data = data1) %>% 
+  step_dummy(Geography) %>% 
+  prep %>% bake(new_data = data1)
+
+changed_cols_idx <- data2 %>% colnames %>% str_split("_") %>% map_lgl(~ .x[1] == "Geography")
+changed_cols <- colnames(data2)[changed_cols_idx]
+data2 <- data2 %>% 
+  mutate_at(changed_cols, ~ as.factor(.x) %>% `levels<-`(c("No", "Yes"))) %>% 
+  rename_at(changed_cols, ~ str_remove(.x, "_"))
+
+data2 %>% filter_vars_by_iv(significance_thres = 0.01) %>%
   initial_split(prop = 0.75) %>%
   saveRDS("data/split_raw.RDS")
 
-data2 <- data1 %>% 
+data3 <- data2 %>% 
   factorize(bin_methods = "tree") %>% 
   as_tibble() %>% 
-  filter_vars_by_iv(significance_thres = 0.02)
+  filter_vars_by_iv(significance_thres = 0.01)
 
-dataset_split <- initial_split(data2, prop = 0.75) %>% saveRDS("data/split.RDS")
+dataset_split <- data3 %>% initial_split(prop = 0.75) %>% saveRDS("data/split.RDS")
 
 rm(list = ls())

@@ -41,7 +41,7 @@ choose_best_binning <- function(binnings_df) {
 }
 
 factorize <- function(df, y_name = "Exited", y_pos = "No", bin_limit = 6, bin_methods = c("tree", "chimerge")) {
-  fct_cols <- colnames(df)[data1 %>% map_lgl(~ !is.factor(.x)) & colnames(df) != y_name]
+  fct_cols <- colnames(df)[(df %>% map_lgl(~ !is.factor(.x))) & colnames(df) != y_name]
   binnings <- bin_methods %>% 
     map(~ df %>% woebin(y = y_name, x = fct_cols, positive = y_pos, bin_num_limit = bin_limit, method = .x)) %>% 
     `names<-`(bin_methods) %>% 
@@ -51,7 +51,7 @@ factorize <- function(df, y_name = "Exited", y_pos = "No", bin_limit = 6, bin_me
   
   df %>% woebin_ply(bins = bins_best, to = "bin") %>% 
     mutate_if(~ !is.factor(.x), as.factor) %>% 
-    rename_all(function(x) map_chr(str_split(x, "_"), ~ .x[1])) %>% 
+    rename_all(function(x) str_split(x, "_") %>% map_chr(~ .x[1])) %>% 
     return
 }
 
