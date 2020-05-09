@@ -11,15 +11,17 @@ rm(list = ls())
 # source("dataset_prep.R")
 
 dataset_split <- readRDS("data/split.RDS")
-dataset_split$data <-  dataset_split$data %>% 
-  mutate_if(~ length(levels(.x)) > 3, as.integer) %>% 
+dataset_split$data <-  dataset_split$data %>%
+  mutate_if(~ length(levels(.x)) > 3, as.integer) %>%
   mutate_at(vars(Balance), as.integer)
+
+# dataset_split <- readRDS("data/split_raw.RDS")
 
 df_train <- dataset_split %>% training()
 df_test <- dataset_split %>% testing()
 
 gbm_model_1 <- boost_tree(mode = "classification",
-                          mtry = 2,
+                          mtry = 3,
                           trees = 500,
                           min_n = 5,
                           # tree_depth = 5,
