@@ -7,7 +7,12 @@ library(GGally)
 library(scorecard)
 library(caret)
 library(ranger)
+<<<<<<< HEAD
 library(rmarkdown)
+=======
+
+
+>>>>>>> 6422f498a104e2a928c4592eef8782bb6218b7dc
 rm(list = ls())
 setwd("C:/Users/Szymon/Documents/churn-classification/data")
 source("funs.R")
@@ -39,6 +44,7 @@ iv(data1, "Exited", "Geography", positive = "No")
 iv(data1, "Exited", "NotSpain", positive = "No")
 
 opt_bin <- woebin(data1, "Exited", "Age", positive = "No")#[[1]]$breaks
+
 opt_bin2 <- woebin(data1,"Exited","Balance",positive = "No")
 opt_bin3 <- woebin(data1,"Exited","CreditScore",positive = "No")
 opt_bin4 <- woebin(data1,"Exited","NumOfProducts",positive = "No")
@@ -50,4 +56,7 @@ data2 <- data2 %>% woebin_ply(opt_bin3, to = "bin") %>% mutate(CreditScore_bin =
 data2 <- data2 %>% woebin_ply(opt_bin4, to = "bin") %>% mutate(NumOfProducts_bin = as.factor(NumOfProducts_bin)) 
 data2 <- data2 %>% woebin_ply(opt_bin5, to = "bin") %>% mutate(EstimatedSalary_bin = as.factor(EstimatedSalary_bin)) 
 data2 <- data2 %>% woebin_ply(opt_bin6, to = "bin") %>% mutate(Tenure_bin =as.factor(Tenure_bin))
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6422f498a104e2a928c4592eef8782bb6218b7dc
