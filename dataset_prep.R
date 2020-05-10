@@ -30,13 +30,13 @@ data2 <- data2 %>%
 
 data2 %>% filter_vars_by_iv(significance_thres = 0.01) %>%
   initial_split(prop = 0.75) %>%
-  saveRDS("data/split_raw.RDS")
+  write_rds("data/split_raw.RDS", compress = "gz2")
 
 data3 <- data2 %>% 
   factorize(bin_methods = "tree") %>% 
   as_tibble() %>% 
   filter_vars_by_iv(significance_thres = 0.01)
 
-dataset_split <- data3 %>% initial_split(prop = 0.75) %>% saveRDS("data/split.RDS")
+dataset_split <- data3 %>% initial_split(prop = 0.75) %>% write_rds("data/split.RDS", compress = "gz2")
 
 rm(list = ls())
