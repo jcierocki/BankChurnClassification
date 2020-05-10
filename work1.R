@@ -7,12 +7,12 @@ library(GGally)
 library(scorecard)
 library(caret)
 library(ranger)
-
+library(rmarkdown)
 rm(list = ls())
-
+setwd("C:/Users/Szymon/Documents/churn-classification/data")
 source("funs.R")
-
-data_raw <- read_csv("data/dataset1.csv")
+str(data2$Exited)
+data_raw <- read.csv("dataset1.csv")
 data1 <- data_raw %>% 
   mutate(Geography = factor(Geography), Gender = factor(Gender), 
          Exited = factor(Exited) %>% `levels<-`(c("No", "Yes")), 
@@ -50,3 +50,4 @@ data2 <- data2 %>% woebin_ply(opt_bin3, to = "bin") %>% mutate(CreditScore_bin =
 data2 <- data2 %>% woebin_ply(opt_bin4, to = "bin") %>% mutate(NumOfProducts_bin = as.factor(NumOfProducts_bin)) 
 data2 <- data2 %>% woebin_ply(opt_bin5, to = "bin") %>% mutate(EstimatedSalary_bin = as.factor(EstimatedSalary_bin)) 
 data2 <- data2 %>% woebin_ply(opt_bin6, to = "bin") %>% mutate(Tenure_bin =as.factor(Tenure_bin))
+
