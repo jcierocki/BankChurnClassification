@@ -8,7 +8,7 @@ output:
 ---
 
 
-Dane, które wykorzystamy do naszej analizy pochodzą ze strony kaggle.com - strona, która zrzesza naukowców z wielu dziedzin. Dane zostały pobrane od 10 000 klientów jednego banku w celu zbadania zależności pomiędzy pewnymi cechami klientów, a ich decyzją o opuszczeniu banku.
+Dane, które wykorzystamy do naszej analizy pochodzą ze strony kaggle.com, która zrzesza naukowców z wielu dziedzin. Dane zostały pobrane od 10 000 klientów jednego banku w celu zbadania zależności pomiędzy pewnymi ich cechami, a decyzjami o opuszczeniu banku.
 
 Zmienną decyzyjną jest zmienna \textit{EXIT} typu Factor, która przyjmuje wartość:
 
