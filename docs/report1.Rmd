@@ -13,6 +13,73 @@ Firmy, a w szczególności banki, inwestują mocno w modelowanie tego zjawiska, 
 
 W niniejszym raporcie zbadamy, jak cechy klienta są powiązane z podjęciem przez niego decyzji o zmianie dostawcy usług bankowych. Na analizowane przez nas czynniki składają się atrybuty charakteryzującego samego klienta jak i jego dotychczasową współpracę z bankiem.
 
+Zjawisko "churnu" będziemy analizować z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Problem badawczy, jaki chcemy przeanalizować to czy na podstawie tych danych bank jest w stanie z dużym prawdobieństwem przewidzieć potencjalną decyzję klienta o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
+
 # Problem badawczy
 
-Zjawisko "churnu" będziemy analizować z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Problem badawczy, jaki chcemy przeanalizować to czy na podstawie tych danych bank jest w stanie z dużym prawdobieństwem przewidzieć potencjalną decyzję klienta o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
+W ninejszym raporcie zbadamy, jakie czynniki wpływają na decyzję klienta w przyadku zmiany banku. Skupimy się na czynnikach ekonomicznych, ale również aspektach psychofizycznych, które będą znacząco wpływać na wynik badanego przez nas zagadnienia.
+
+OPIS ZBIORU DANYCH
+
+Dane, które wykorzystamy do naszej analizy pochodzą ze strony kaggle.com, która zrzesza naukowców z wielu dziedzin. Dane zostały pobrane od 10 000 klientów jednego banku w celu zbadania zależności pomiędzy pewnymi ich cechami, a decyzjami o opuszczeniu banku.
+
+Zmienną decyzyjną jest zmienna \textit{EXIT} typu Factor, która przyjmuje wartość:
+
+$\Rightarrow$ *1*, jeżeli klient opuścił bank
+
+$\Rightarrow$ *0*, jeżeli klient pozostał w banku
+
+Do zbioru zmiennych objaśniających będziemy używać 11 zmiennych, które pozwalają nam na dogłębną analizę interesującego nas tematu. Mamy zarówno zmienne, które pozwalają nam na zebranie podstawowych informacji na temat osób ankietowanych (wiek, płeć, kraj pochodzenia) ale również informacje typu "czy klient posiada kartę kredytową", "ilość posiadanych pieniędzy".
+
+Zmienne, które wybraliśmy zostały dobrane na podstawie ówcześnie wykonanej analizy dostępnych materiałów i własnych przypuszczeń odnośnie czynników, które rzeczywiście mają realny wpływ na badane zjawisko.\newline
+
+   \textit{Geography} - miejsce pochodzenia osoby ankietowanej, możliwe wartości to:\newline 
+  
+  $\Rightarrow$ France - jeśli osoba pochodzi z Francji
+  
+  $\Rightarrow$ Germany - jeśli osoba pochodzi z Niemiec
+  
+  $\Rightarrow$ Spain - jeśli osoba pochodzi z Hiszpanii\newline
+  
+  
+  \textit{Gender} - płeć opisana zmienną binarną, która przyjmuje wartości:\newline
+  
+  
+  $\Rightarrow$ 1 - jeśli osoba jest mężczyzną
+  
+  $\Rightarrow$ 0 - jeśli osoba jest kobietą\newline
+  
+  
+  \textit{HasCrCard} - czy osoba posiada kartę kredytową\newline
+  
+  
+  $\Rightarrow$ 1 - posiada kartę kredytową
+  
+  $\Rightarrow$ 0 - nie posiada karty kredytowej\newline
+  
+  
+  \textit{IsActiveMember} - zmienna binarna, mówiąca czy klient jest aktywnym uczestnikiem banku, przyjmująca wartości:\newline
+  
+  
+  $\Rightarrow$ 1 - jeżeli jeset aktywnym uczestnikiem
+  
+  $\Rightarrow$ 0 - jeżeli nie jest aktywnym uczestnikiem\newline
+  
+  
+  \textit{Age} - zmienna numeryczna określająca wiek klientów\newline
+  
+  
+  \textit{Balance} - zmienna ciągła określająca ilość pieniędzy na koncie klienta\newline
+  
+  
+  \textit{CreditScore} - zmienna ciągła określająca ilość punktów kredytowych klienta\newline
+  
+  
+  \textit{NumOfProducts} - zmienna ciągła określająca ilość produktów bankowych, których używa klient\newline
+  
+  
+  \textit{EstimatedSalary} - zmienna ciągła określająca estymowaną wartość zarobków klienta\newline
+  
+  
+  \textit{Tenure} - zmienna ciągła określająca liczbę lat jaka minęła, odkąd klient dołączył do banku\newline
+
