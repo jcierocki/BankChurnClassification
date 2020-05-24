@@ -49,7 +49,7 @@ df_pred <- gbm_model_1 %>%
 df_pred %>% 
   metrics(Exited, .pred_class, .pred_No) %>% 
   kable("html") %>% 
-  save_kable("figures/conf_matrix_gbm.png")
+  save_kable("figures/metrics_gbm.png")
 
 ############################
 
