@@ -2,84 +2,46 @@
 title: "Churn modeling - problem klasyfikacji klienta banku"
 author: "Jakub Cierocki & Szymon Reddig"
 date: "14 04 2020"
-output: pdf_document
+output:
+  pdf_document:
+    includes:
+      in_header: "preamble.tex"
+---
 
+\clearpage
+\tableofcontents
+\clearpage
 
-# Wprowadzenie
+## Wprowadzenie
 
-Zjawisko tzw "customer churn" (\textit{churn} - ang. odpływ, rezygnacja), czyli rezygnacji klienta ze  współpracy z przedsiębiorstwem, jest w kręgu zainteresowania naukowców od wielu lat. Wiąże się z nim kilka różnych problemów analitycznych, m.in. prognozowanie dynamiki liczby klientów oraz klasyfikacja indywidualnego klienta (czy zrezygnuje?).
+Zjawisko tzw. ,,customer churn'' (ang. \textit{churn} - odpływ, rezygnacja), czyli rezygnacji klienta z subskrypcji usług danego przedsiębiorstwa, jest w kręgu zainteresowania naukowców od wielu lat.
 
-Firmy, a w szczególności banki, inwestują mocno w modelowanie tego zjawiska, gdyż pozyskiwanie nowych klientów jest często o wiele droższym zabiegiem, niż utrzymanie dotychczasowych, a dynamika ich liczby jest kluczowa przy modelowaniu procesów biznesowych. Przykładowo, jeśli Spotify (dostawca usługi streamowania muzyki) zidentyfikowałoby segment osób, które z dużym prawdopobieństwem zrezygnują niedługo z subskrypcji, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich oferty. Z drugiej strony powiązanie nielojalności konsumenckiej z atrybutami konkretnej podgrupy klientów może pomóc w racjonalizacji kosztów przeznaczonych na reklamę i projektowanie produktów przeznaczonych dla jej przedstawicieli.
+Do modelowania churnu stosuje się m.in. metody analizy przetrwania (jak długo klient będzie odnawiał subskrybcję) oraz klasyfikacji binarnej (czy klient w niedługiej przyszłości zmieni dostawcę usług). W niniejszym raporcie zajmiemy się drugim z ww. zagadnień.
 
-W niniejszym raporcie zbadamy, jak cechy klienta są powiązane z podjęciem przez niego decyzji o zmianie dostawcy usług bankowych. Na analizowane przez nas czynniki składają się atrybuty charakteryzującego samego klienta jak i jego dotychczasową współpracę z bankiem.
+Firmy, a w szczególności telekomy, ubezpieczyciele oraz banki, inwestują w modelowanie tego zjawiska, gdyż pozyskiwanie nowych klientów jest często o wiele droższym zabiegiem, niż utrzymanie dotychczasowych, a dynamika ich liczby jest kluczowa przy modelowaniu procesów biznesowych. Przykładowo, jeśli Spotify (dostawca usługi streamowania muzyki) zidentyfikowałoby segment osób, które z dużym prawdopobieństwem zrezygnują niedługo z subskrypcji, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich oferty. Z drugiej strony powiązanie nielojalności konsumenckiej z atrybutami konkretnej podgrupy klientów może pomóc w racjonalizacji kosztów przeznaczonych na reklamę i projektowanie produktów przeznaczonych dla jej przedstawicieli. W przypadku m.in. telekomów subskrypcje abonamentowe stanowią podstawowe źródło dochodów przedsiębiorstwa i ich odpowiednie prognozowanie ich dynamiki jest niezbędne w procesie prognozowania przychodów przedsiębiorstwa.
 
-Zjawisko "churnu" będziemy analizować z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Problem badawczy, jaki chcemy przeanalizować to czy na podstawie tych danych bank jest w stanie z dużym prawdobieństwem przewidzieć potencjalną decyzję klienta o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
+## Problem badawczy
 
-# Problem badawczy
+Zjawisko ,,churnu'' będzie analizowane z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Celem niniejszej pracy będzie zbadanie czy na podstawie tych danych bank jest w stanie przewidzieć przyszłe decyzje o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
 
-W ninejszym raporcie zbadamy, jakie czynniki wpływają na decyzję klienta w przyadku zmiany banku. Skupimy się na czynnikach ekonomicznych, ale również aspektach psychofizycznych, które będą znacząco wpływać na wynik badanego przez nas zagadnienia.
+## Opis zbioru danych
 
-OPIS ZBIORU DANYCH
+Zbiór danych wykorzystamy w niniejszej pochodzi z portalu kaggle.com, należącego do Google LLC i pełniącego rolę platformy wymiany myśli (w tym zbiorów danych) dla specjalistów i pasjonatów zajmujących się analizą danych. Zanonimizowane dane dotyczą 10 tys. klientów jednego z banków, operującego w 3 różnych krajach (Francja, Niemcy, Hiszpania).
 
-Dane, które wykorzystamy do naszej analizy pochodzą ze strony kaggle.com, która zrzesza naukowców z wielu dziedzin. Dane zostały pobrane od 10 000 klientów jednego banku w celu zbadania zależności pomiędzy pewnymi ich cechami, a decyzjami o opuszczeniu banku.
+Rolę atrybutu decyzyjnego będzie pełnić zmiennna binarna \textit{EXIT}, która przyjmuje wartość 1 jeżeli klient zrezygnował z usług danego banku.
 
-Zmienną decyzyjną jest zmienna \textit{EXIT} typu Factor, która przyjmuje wartość:
+Wykorzystany zbiór deskryptorów liczy łącznie 10 zmiennych, które opisują cechy osobowe oraz historię relacji danego klienta z bankiem.
 
-$\Rightarrow$ *1*, jeżeli klient opuścił bank
-
-$\Rightarrow$ *0*, jeżeli klient pozostał w banku
-
-Do zbioru zmiennych objaśniających będziemy używać 11 zmiennych, które pozwalają nam na dogłębną analizę interesującego nas tematu. Mamy zarówno zmienne, które pozwalają nam na zebranie podstawowych informacji na temat osób ankietowanych (wiek, płeć, kraj pochodzenia) ale również informacje typu "czy klient posiada kartę kredytową", "ilość posiadanych pieniędzy".
-
-Zmienne, które wybraliśmy zostały dobrane na podstawie ówcześnie wykonanej analizy dostępnych materiałów i własnych przypuszczeń odnośnie czynników, które rzeczywiście mają realny wpływ na badane zjawisko.\newline
-
-   \textit{Geography} - miejsce pochodzenia osoby ankietowanej, możliwe wartości to:\newline 
-  
-  $\Rightarrow$ France - jeśli osoba pochodzi z Francji
-  
-  $\Rightarrow$ Germany - jeśli osoba pochodzi z Niemiec
-  
-  $\Rightarrow$ Spain - jeśli osoba pochodzi z Hiszpanii\newline
-  
-  
-  \textit{Gender} - płeć opisana zmienną binarną, która przyjmuje wartości:\newline
-  
-  
-  $\Rightarrow$ 1 - jeśli osoba jest mężczyzną
-  
-  $\Rightarrow$ 0 - jeśli osoba jest kobietą\newline
-  
-  
-  \textit{HasCrCard} - czy osoba posiada kartę kredytową\newline
-  
-  
-  $\Rightarrow$ 1 - posiada kartę kredytową
-  
-  $\Rightarrow$ 0 - nie posiada karty kredytowej\newline
-  
-  
-  \textit{IsActiveMember} - zmienna binarna, mówiąca czy klient jest aktywnym uczestnikiem banku, przyjmująca wartości:\newline
-  
-  
-  $\Rightarrow$ 1 - jeżeli jeset aktywnym uczestnikiem
-  
-  $\Rightarrow$ 0 - jeżeli nie jest aktywnym uczestnikiem\newline
-  
-  
-  \textit{Age} - zmienna numeryczna określająca wiek klientów\newline
-  
-  
-  \textit{Balance} - zmienna ciągła określająca ilość pieniędzy na koncie klienta\newline
-  
-  
-  \textit{CreditScore} - zmienna ciągła określająca ilość punktów kredytowych klienta\newline
-  
-  
-  \textit{NumOfProducts} - zmienna ciągła określająca ilość produktów bankowych, których używa klient\newline
-  
-  
-  \textit{EstimatedSalary} - zmienna ciągła określająca estymowaną wartość zarobków klienta\newline
-  
-  
-  \textit{Tenure} - zmienna ciągła określająca liczbę lat jaka minęła, odkąd klient dołączył do banku\newline
+\begin{itemize}
+  \item \textit{Geography} - kraj pochodzenia, zmienna kategoryzowana, skala nominalna
+  \item \textit{Gender} - płeć, zmienna binarna, 1 - mężczyzna
+  \item \textit{HasCrCard} - posiadanie karty kredytowej, zmienna binarna, 1 - posiada
+  \item \textit{IsActiveMember} - bycie aktywnym klientem banku (korzystającym z subskrybowanych usług np. wykonującym przelewy), zmienna binarna, 1 - tak
+  \item \textit{Age} - wiek, zmienna całkowitoliczbowa
+  \item \textit{Balance} - ilość pieniędzy na koncie, zmienna liczbowa
+  \item \textit{CreditScore} - ocena wiarygodności kredytowej, zmienna liczbowa
+  \item \textit{NumOfProducts} - liczba subsrybowanych usług bankowych, zmienna całkowitoliczbowa
+  \item \textit{EstimatedSalary} - przybliżone zarobki, zmienna liczbowa
+  \item \textit{Tenure} - liczba lat odkąd klient zaczął korzystać z usług danego banku, zmienna całkowitoliczbowa
+\end{itemize}
 

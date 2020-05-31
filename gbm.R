@@ -51,6 +51,11 @@ df_pred %>%
   kable("html") %>% 
   save_kable("figures/metrics_gbm.png")
 
+df_pred %>% 
+  exportable_conf_matrix() %>% 
+  kable("html") %>% 
+  save_kable("figures/conf_matrix_gbm.png")
+
 ############################
 
 df_pred_probs <- gbm_model_1 %>% 
