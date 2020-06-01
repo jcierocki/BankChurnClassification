@@ -12,11 +12,21 @@ library(scorecard)
 rm(list = ls())
 
 source("funs_valid.R")
+source("funs_preproc.R")
 
 fitted_models <- read_rds("data/fitted_models.RDS")
 pred_dfs <- read_rds("data/predictions.RDS")
 df_1 <- read_rds("data/split.RDS")$data
 df_2 <- read_rds("data/split_raw.RDS")$data
+
+##########
+
+## testy
+
+plot_freq(df_1, "Age") +
+  xlab("Wiek")
+
+vip(fitted_models[[1]][[1]], aesthetics = list(fill = "#56B4E9", color = "grey30"))
 
 ##########
 

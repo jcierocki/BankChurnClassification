@@ -34,8 +34,8 @@ gbm_model_1 <- boost_tree(mode = "classification",
   set_engine("xgboost", objective = "binary:logistic") %>% 
   fit(Exited ~ ., data = df_train)
 
-df_pred <- gbm_model_1 %>% 
-  predict(df_test) %>% 
+df_pred <- gbm_model_1 %>%
+  predict(df_test) %>%
   bind_cols(df_test)
 
 df_pred %>% metrics(Exited, .pred_class)
@@ -55,6 +55,11 @@ df_pred %>%
   exportable_conf_matrix() %>% 
   kable("html") %>% 
   save_kable("figures/conf_matrix_gbm.png")
+
+############################
+
+gbm_model_1 %>% write_rds("data/fitted_xgboost.RDS", compress = "bz2")
+df_pred %>% write_rds("data/predictions_xgboost.RDS", compress = "bz2")
 
 ############################
 

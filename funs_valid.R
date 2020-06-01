@@ -5,7 +5,7 @@ get_all_iv <- function(..., y_name = "Exited", pos = "No") {
   
   ivs_list %>% 
     reduce(~ full_join(.x, .y, by = ("variable"))) %>% 
-    `colnames<-`(c("Klasyfikator", str_c("Model ", 1:length(ivs)))) %>% 
+    `colnames<-`(c("Klasyfikator", str_c("Model ", 1:length(ivs_list)))) %>% 
     return
 }
 

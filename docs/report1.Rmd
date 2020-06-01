@@ -1,12 +1,65 @@
 ---
-title: "Churn modeling - problem klasyfikacji klienta banku"
-author: "Jakub Cierocki & Szymon Reddig"
-date: "14 04 2020"
 output:
   pdf_document:
     includes:
       in_header: "preamble.tex"
 ---
+
+```{r, include=FALSE}
+
+library(tidyverse)
+library(stringr)
+library(scorecard)
+library(tidymodels)
+library(ranger)
+library(xgboost)
+library(vip)
+library(knitr)
+
+rm(list = ls())
+
+source("../funs_valid.R")
+source("../funs_preproc.R")
+
+ranger_models <- read_rds("../data/fitted_models.RDS")
+xgboost_model <- read_rds("../data/fitted_xgboost.RDS")
+df_preds_ranger <- read_rds("../data/predictions.RDS")
+df_pred_xgboost <- read_rds("../data/predictions_xgboost.RDS")
+df_1 <- read_rds("../data/split.RDS")$data
+df_2 <- read_rds("../data/split_raw.RDS")$data
+
+```
+
+\begin{titlepage}
+
+\begin{center}
+\vspace*{0.5in}
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[width=7cm]{herbSGH.png}
+\end{center}
+\end{figure}
+\vspace*{0.15in}
+Indukowane Reguły Decyzyjne - 2020\\
+\vspace*{0.05in}
+SGH Warsaw School of Economics \\
+\vspace*{0.5in}
+\begin{large}
+CHURN MODELLING \\
+\end{large}
+\vspace*{0.2in}
+\begin{Large}
+\textbf{Klasyfikacja klienta banku} \\
+\end{Large}
+\vspace*{0.5in}
+\rule{80mm}{0.1mm}\\
+\vspace*{0.1in}
+\begin{large}
+Przygotowane przez: \\
+Jakub Cierocki \& Szymon Reddig \\
+\end{large}
+\end{center}
+\end{titlepage}
 
 \clearpage
 \tableofcontents
@@ -24,7 +77,7 @@ Firmy, a w szczególności telekomy, ubezpieczyciele oraz banki, inwestują w mo
 
 Zjawisko ,,churnu'' będzie analizowane z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Celem niniejszej pracy będzie zbadanie czy na podstawie tych danych bank jest w stanie przewidzieć przyszłe decyzje o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
 
-## Opis zbioru danych
+## Zbiór danych
 
 Zbiór danych wykorzystamy w niniejszej pochodzi z portalu kaggle.com, należącego do Google LLC i pełniącego rolę platformy wymiany myśli (w tym zbiorów danych) dla specjalistów i pasjonatów zajmujących się analizą danych. Zanonimizowane dane dotyczą 10 tys. klientów jednego z banków, operującego w 3 różnych krajach (Francja, Niemcy, Hiszpania).
 
@@ -44,4 +97,25 @@ Wykorzystany zbiór deskryptorów liczy łącznie 10 zmiennych, które opisują 
   \item \textit{EstimatedSalary} - przybliżone zarobki, zmienna liczbowa
   \item \textit{Tenure} - liczba lat odkąd klient zaczął korzystać z usług danego banku, zmienna całkowitoliczbowa
 \end{itemize}
+
+Surowy zbiór danych był już oczyszony i nie zawierał braków danych oraz zmiennych wymagających rekodowania. Dokonano konwersji typów na odpowiadające rzeczywistemu charakterowi zmiennych (liczbowe lub kategoryzowane). Kategoriom zmiennych jakościowych nadano odpowiednie etykiety. Zmienna \textit{Country} jako jedyna zmienna nominalna z liczbą kategorii $>2$ w zbiorze została przekonwertowana na dwie zmienne binarne \textit{CountryGermany} oraz \textit{CountrySpain}.
+
+Zostały wyodrębione 2 warianty zbioru danych. Pierwszy, który dalej będzie nazywany surowym, zawiera dane uwzględniające tylko ww. przekształcenia. Drugi, które będzie dalej nazywany przekształconym, zawiera wszystkie zmienne ilościowe poddane kategoryzacji. Wykorzystano w tym celu pakiet \textit{scorecard} oraz algorytm wykorzystujące drzewa do dobrania optymalnego z punktu widzenia IV (ang. \textit{Information Value}) kategoryzacji zmiennej. W celu uniknięcia zaburzenia oceny istotności zmiennych w modelu na podstawie wskaźnika Giniego, maksymalna liczba kategorii została ustalona na poziomie 5. Już po konwersji, uzyskany zbiór danych przefiltrowano adrzucając zmienne, których IV było mniejsze od 0.01.
+
+```{r, echo=FALSE}
+get_all_iv(df_1, df_2) %>% 
+  mutate_if(is.numeric, ~ round(.x, 2)) %>% 
+  kable("markdown", col.names = c("Zmienna", "Surowy", "Przekształcony"))
+```
+
+IV są konsekwentnie wyższe dla danych nieprzekształconych, co wynika z faktu, że wskaźnik ten jest dodatnio skorelowany z liczbą kategorii. 
+
+```{r, echo=FALSE, out.height='310px', fig.align='center'}
+plot_multi_freq(df_1, c("Age", "Balance", "NumOfProducts"))
+```
+
+Jak widać na powyższym wykresie są obserwowane liniowe zależności między udziałem danej kategorii w liczbie obserwacji, a procentem rezygnujących klientów, dla zmiennych \textit{Balance} oraz \textit{NumOfProducts}. W przypadku zmiennej \textit{Age} wykres nie sugeruje takiej korelacji co budzi podejrzenia co do poprawności tej kategoryzacji.
+
+## Metodologia
+
 

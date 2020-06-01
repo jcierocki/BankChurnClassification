@@ -1,22 +1,43 @@
 #### auxilary functions concerning data preprocessing linked visualization
 
-plot_freq <- function(df, fac_var, target = "Exited") {
+calc_count_frame <- function(df, fac_var, target) {
   target_vec <- df %>% pull(target)
   
-  count_frame <- as.data.frame(table(df[,fac_var])) %>% as_tibble() %>%
-    rename(TotalFreq = Freq) %>% 
+  as.data.frame(table(df[,fac_var])) %>% as_tibble() %>%
+    rename(TotalFreq = Freq, Cathegory = Var1) %>% 
     add_column(ExitedFreq = as.integer(table(df[target_vec == "Yes", fac_var]))) %>% 
-    mutate_at(vars(TotalFreq, ExitedFreq), ~ .x / 100)  %>% 
-    column_to_rownames(var = "Var1")
-  
-  print(count_frame)
+    mutate_at(vars(TotalFreq, ExitedFreq), ~ .x / 100)
+}
+
+plot_freq <- function(df, fac_var, target = "Exited", axis2_lab = "Odsetek churnu na kategorię (%)") {
+  count_frame <- calc_count_frame(df, fac_var, target)
   multi <- max(count_frame$TotalFreq)/max(count_frame$ExitedFreq)
   
   ggplot(count_frame) + 
-    geom_bar(aes(x = rownames(count_frame), y = TotalFreq), stat = "identity", color = "black", fill = "grey") +
-    geom_line(aes(x = 1:nrow(count_frame), y = ExitedFreq * multi), color = "red", lwd = 2) + 
-    scale_y_continuous(sec.axis = sec_axis(trans = ~ . / multi)) +
-    xlab("Country")
+    geom_bar(aes(x = Cathegory, y = TotalFreq), stat = "identity", color = "grey30", fill = "#56B4E9") +
+    geom_line(aes(x = 1:nrow(count_frame), y = ExitedFreq * multi), color = "firebrick2", lwd = 2) + 
+    scale_y_continuous(sec.axis = sec_axis(name = axis2_lab, trans = ~ . / multi)) +
+    labs(x = fac_var, y = "Odsetek instancji o danej kategorii (%)")
+}
+
+plot_multi_freq <- function(df, var_vec, target = "Exited", axis2_lab = "Odsetek churnu na kategorię (%)") {
+  df_count_list <- var_vec %>% 
+    map(~ calc_count_frame(df, .x, target) %>% mutate(Zmienna = .x))
+  
+  multi <- df_count_list %>% 
+    map_dbl(~ max(.x$TotalFreq)/max(.x$ExitedFreq)) %>% 
+    max
+  
+  df_full <- do.call(bind_rows, df_count_list)
+  
+  df_full %>% 
+    ggplot(aes(x = levels(Cathegory), y = TotalFreq, group = 1)) +
+      geom_col(color = "grey30", fill = "#56B4E9") +
+      geom_line(aes(y = ExitedFreq * multi), color = "firebrick2", lwd = 1.3) +
+      scale_y_continuous(sec.axis = sec_axis(~ . / multi, axis2_lab)) +
+      facet_wrap(~ Zmienna, nrow = 1, scales = "free_x") + 
+      labs(x = "Kategorie", y = "Odsetek instancji o danej kategorii (%)") +
+      theme(axis.text=element_text(size=6.5))
 }
 
 merge_factor_vars <- function(var1, ...) {
