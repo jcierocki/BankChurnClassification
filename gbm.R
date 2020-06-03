@@ -27,10 +27,10 @@ gbm_model_1 <- boost_tree(mode = "classification",
                           mtry = 3,
                           trees = 500,
                           min_n = 5,
-                          # tree_depth = 5,
+                          tree_depth = NULL,
                           learn_rate = .1,
-                          loss_reduction = 0,
-                          sample_size = 0.7) %>% 
+                          loss_reduction = NULL,
+                          sample_size = 0.7) %>%
   set_engine("xgboost", objective = "binary:logistic") %>% 
   fit(Exited ~ ., data = df_train)
 

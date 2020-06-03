@@ -21,12 +21,14 @@ rm(list = ls())
 source("../funs_valid.R")
 source("../funs_preproc.R")
 
+tree_model_full <- read_rds("../data/tree_model1.rds")
+tree_model_simple <- read_rds("../data/tree_model2.rds")
 ranger_models <- read_rds("../data/fitted_models.RDS")
 xgboost_model <- read_rds("../data/fitted_xgboost.RDS")
 df_preds_ranger <- read_rds("../data/predictions.RDS")
 df_pred_xgboost <- read_rds("../data/predictions_xgboost.RDS")
-df_1 <- read_rds("../data/split.RDS")$data
-df_2 <- read_rds("../data/split_raw.RDS")$data
+df_1 <- read_rds("../data/split.RDS")
+df_2 <- read_rds("../data/split_raw.RDS")
 
 ```
 
@@ -103,7 +105,7 @@ Surowy zbiór danych był już oczyszony i nie zawierał braków danych oraz zmi
 Zostały wyodrębione 2 warianty zbioru danych. Pierwszy, który dalej będzie nazywany surowym, zawiera dane uwzględniające tylko ww. przekształcenia. Drugi, które będzie dalej nazywany przekształconym, zawiera wszystkie zmienne ilościowe poddane kategoryzacji. Wykorzystano w tym celu pakiet \textit{scorecard} oraz algorytm wykorzystujące drzewa do dobrania optymalnego z punktu widzenia IV (ang. \textit{Information Value}) kategoryzacji zmiennej. W celu uniknięcia zaburzenia oceny istotności zmiennych w modelu na podstawie wskaźnika Giniego, maksymalna liczba kategorii została ustalona na poziomie 5. Już po konwersji, uzyskany zbiór danych przefiltrowano adrzucając zmienne, których IV było mniejsze od 0.01.
 
 ```{r, echo=FALSE}
-get_all_iv(df_1, df_2) %>% 
+get_all_iv(df_1$data, df_2$data) %>% 
   mutate_if(is.numeric, ~ round(.x, 2)) %>% 
   kable("markdown", col.names = c("Zmienna", "Surowy", "Przekształcony"))
 ```
@@ -111,7 +113,7 @@ get_all_iv(df_1, df_2) %>%
 IV są konsekwentnie wyższe dla danych nieprzekształconych, co wynika z faktu, że wskaźnik ten jest dodatnio skorelowany z liczbą kategorii. 
 
 ```{r, echo=FALSE, out.height='310px', fig.align='center'}
-plot_multi_freq(df_1, c("Age", "Balance", "NumOfProducts"))
+plot_multi_freq(df_1$data, c("Age", "Balance", "NumOfProducts"))
 ```
 
 Jak widać na powyższym wykresie są obserwowane liniowe zależności między udziałem danej kategorii w liczbie obserwacji, a procentem rezygnujących klientów, dla zmiennych \textit{Balance} oraz \textit{NumOfProducts}. W przypadku zmiennej \textit{Age} wykres nie sugeruje takiej korelacji co budzi podejrzenia co do poprawności tej kategoryzacji.
@@ -128,11 +130,13 @@ W pracy zostaną porównane 4 modele:
 
 Drzewo decyzyjne na danych przekształconych pominięto ponieważ kategoryzacja zmiennych służy jedynie możliwości uzyskania nieobciążonych pomiarów istotności obliczanych z użyciem wskaźnika Giniego, a w przypadku pojedynczego drzewa mamy możliwość jego podejrzenia i co za tym idzie pełną interpretowalność zmiennych. GBM na danych surowych pominięto ponieważ API pakietu XGBoost nie pozwala na oszacowanie istotności zmiennych metodą permutacyjną przy trenowaniu modelu. W tej sytuacji, zastosowanie danych surowych spowodowałoby uzyskanie obciążonych pomiarów istotności zmiennych.
 
-Do zarządzania podziałem zbiorów na testowy i uczący, określenia specyfikacji, trenowania oraz walidacji modeli wykorzystano rodzinę pakietów \textit{Tidymodels}, będą następcą popularnego pakietu \textit{Caret} i rozwijaną w ramach projektu \textit{Tidyverse}.
+Do zarządzania podziałem zbiorów na testowy i uczący, określania specyfikacji, trenowania oraz walidacji modeli wykorzystano rodzinę pakietów \textit{Tidymodels}, będą następcą popularnego pakietu \textit{Caret} i rozwijaną w ramach projektu \textit{Tidyverse}.
 
 Drzewo decyzyjne oraz lasy losowe zostały poddane kalibracji z użyciem metody przeszukiwania zachłannego wszystkich kombinacji przestrzeni parametrów. Dobrano tak odpowiednio maksymalną parametry \textit{cost_complexity} i \textit{tree_depth} dla drzewa decyzyjnego oraz \textit{mtry} (maksymalna liczba zmiennych wykorzystywanych przy podziale węzła) i \textit{sample.fraction}. Model GBM został poddany jedynie eksperckiej kalibracji, ze względu na dużo bardziej skomplikowaną parametryzację i większe zapotrzebowanie na moc obliczeniową, utrudniające przeszukiwanie przestrzeni kombinacji parametrów.
 
 Ogólne własności i obserwowane w zbiorze danych zostaną omówione na przykładzie uproszczonego drzewa decyzyjnego, ale w dalszej analizie będzie wykorzystywane już większe drzewo, o optymalnych dla analizowanego zbioru danych parametrach.
+
+Podział na zbiór testowy i uczący dokanano losowo, przy czym 3/4 obserwacji przeznaczono na zbiór uczący. Tych samych zbiorów uczących i testowych używano następnie dla wszystkich analizowanych modeli, za wyjątkiem kalibracji parametrów, gdzie zostały wykorzystane niezależnie wylosowane podziały.
 
 ## Parametryzacja
 
@@ -154,4 +158,35 @@ Poniżej przedstawiono parametryzację wszystkich omawianych w dalszej części 
   \item $tree\_depth = 8$
 \end{itemize}
 
+### Lasy losowe
+
+\begin{itemize}
+  \item $mtry = 3$ (liczba losowych predyktorów wykorzystywanych przy każdym podziale drzewa)
+  \item $trees = 1000$ (łączna liczba drzew)
+  \item $min\_n = 5$
+  \item $return = TRUE$ (losowanie ze zwracaniem)
+  \item $sample.fraction = 0.7$ (stosunek liczby obserwacji na których uczone jest pojedyncze drzewo do liczebności całego zbioru uczącego)
+\end{itemize}
+
+### GBM
+
+\begin{itemize}
+  \item $mtry = 3$ (liczba losowych predyktorów wykorzystywanych przy każdym podziale drzewa)
+  \item $trees = 1000$ (łączna liczba drzew)
+  \item $min\_n = 5$
+  \item $tree\_depth = DEFAULT$ 
+  \item $learn\_rate = .1$ (stała uczenia)
+  \item $loss\_reduction = DEFAULT$ (minimalny spadek funkcji kary przy którym dopuszczany jest kolejny podział)
+  \item $sample\_size = 0.7$
+\end{itemize}
+
+## Wyniki
+
+### Reguły decyzyjne w modelu uproszczonym
+
+Poniżej zostanie przeanalizowany model uproszczonego drzewa decyzyjnego:
+
+```{r}
+
+```
 
