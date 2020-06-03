@@ -18,9 +18,9 @@ dataset_splits <- list(
 testing_sets <- dataset_splits %>% map(~ .x %>% testing())
 
 models_specs <- list(
-  rand_forest("classification", 2, 1000, 5) %>% 
+  rand_forest("classification", 3, 1000, 5) %>% 
     # set_engine("ranger", num.threads = 8, replace = F, sample.fraction = 0.8, importance = "impurity") %>%
-    set_engine("ranger", num.threads = 8, replace = F, sample.fraction = 0.8, importance = "permutation", local.importance = T)
+    set_engine("ranger", num.threads = 8, replace = T, sample.fraction = 0.7, importance = "permutation", local.importance = T)
   )
 
 spec_names <- str_c("model_", 1:length(dataset_splits))

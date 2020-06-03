@@ -81,7 +81,7 @@ Zjawisko ,,churnu'' będzie analizowane z perspektywy banku. Dysponuje on pewnym
 
 Zbiór danych wykorzystamy w niniejszej pochodzi z portalu kaggle.com, należącego do Google LLC i pełniącego rolę platformy wymiany myśli (w tym zbiorów danych) dla specjalistów i pasjonatów zajmujących się analizą danych. Zanonimizowane dane dotyczą 10 tys. klientów jednego z banków, operującego w 3 różnych krajach (Francja, Niemcy, Hiszpania).
 
-Rolę atrybutu decyzyjnego będzie pełnić zmiennna binarna \textit{EXIT}, która przyjmuje wartość 1 jeżeli klient zrezygnował z usług danego banku.
+Rolę atrybutu decyzyjnego będzie pełnić zmiennna binarna \textit{EXIT}, która przyjmuje wartość 1 jeżeli klient zrezygnował z usług danego banku. Odsetek klientów, którzy zmienili dostawcę usług bankowych wynosi w analizowanym zbiorze 20,37\%.
 
 Wykorzystany zbiór deskryptorów liczy łącznie 10 zmiennych, które opisują cechy osobowe oraz historię relacji danego klienta z bankiem.
 
@@ -117,5 +117,33 @@ plot_multi_freq(df_1, c("Age", "Balance", "NumOfProducts"))
 Jak widać na powyższym wykresie są obserwowane liniowe zależności między udziałem danej kategorii w liczbie obserwacji, a procentem rezygnujących klientów, dla zmiennych \textit{Balance} oraz \textit{NumOfProducts}. W przypadku zmiennej \textit{Age} wykres nie sugeruje takiej korelacji co budzi podejrzenia co do poprawności tej kategoryzacji.
 
 ## Metodologia
+
+W pracy zostaną porównane 4 modele:
+\beign{itemize}
+  \item drzewo decyzyjne CART na danych surowych (pakiet \textit{rpart})
+  \item las losowy na danych przekształconych (pakiet \textit{ranger})
+  \item las losowy na danych surownych (pakiet \textit{ranger})
+  \item GBM na danych przekształconych (pakiet \textit{XGBoost})
+\end{itemize}
+
+Drzewo decyzyjne na danych przekształconych pominięto ponieważ kategoryzacja zmiennych służy jedynie możliwości uzyskania nieobciążonych pomiarów istotności obliczanych z użyciem wskaźnika Giniego, a w przypadku pojedynczego drzewa mamy możliwość jego podejrzenia i co za tym idzie pełną interpretowalność zmiennych. GBM na danych surowych pominięto ponieważ API pakietu XGBoost nie pozwala na oszacowanie istotności zmiennych metodą permutacyjną przy trenowaniu modelu. W tej sytuacji, zastosowanie danych surowych spowodowałoby uzyskanie obciążonych pomiarów istotności zmiennych.
+
+Do zarządzania podziałem zbiorów na testowy i uczący, określenia specyfikacji, trenowania oraz walidacji modeli wykorzystano rodzinę pakietów \textit{Tidymodels}, będą następcą popularnego pakietu \textit{Caret} i rozwijaną w ramach projektu \textit{Tidyverse}.
+
+Drzewo decyzyjne oraz lasy losowe zostały poddane kalibracji z użyciem metody przeszukiwania zachłannego wszystkich kombinacji przestrzeni parametrów. Dobrano tak odpowiednio maksymalną parametry \textit{cost_complexity} i \textit{tree_depth} dla drzewa decyzyjnego oraz \textit{mtry} (maksymalna liczba zmiennych wykorzystywanych przy podziale węzła) i \textit{sample.fraction}. Model GBM został poddany jedynie eksperckiej kalibracji, ze względu na dużo bardziej skomplikowaną parametryzację i większe zapotrzebowanie na moc obliczeniową, utrudniające przeszukiwanie przestrzeni kombinacji parametrów.
+
+Ogólne własności i obserwowane w zbiorze danych zostaną omówione na przykładzie uproszczonego drzewa decyzyjnego, ale w dalszej analizie będzie wykorzystywane już większe drzewo, o optymalnych dla analizowanego zbioru danych parametrach.
+
+## Parametryzacja
+
+Poniżej przedstawiono parametryzację wszystkich omawianych w dalszej części pracy modeli.
+
+### Drzewo decyzyjne uproszczone
+
+\begin{itemize}
+  \item $cost_complexity = 0.00005$
+  \item $min_n = 5$
+  \item $tree_depth = 8$
+\end{itemize}
 
 
