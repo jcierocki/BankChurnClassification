@@ -35,4 +35,9 @@ spec_names <- c("Drzewo", "Las (uproszczone)", "Las (surowe)", "XGBoost")
 
 predict_dfs <- predict_and_bind(models, test_dfs, spec_names)
 
+roc_list <- predict_dfs %>% map2(names(predict_dfs), ~ roc_curve(.x, Exited, .pred_No) %>% 
+                                   mutate(.level = .y))
 
+rlang::exec(bind_rows, !!!roc_list) %>% 
+  mutate(.level = as.factor(.level)) %>% 
+  autoplot()

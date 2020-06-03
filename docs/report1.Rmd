@@ -229,7 +229,7 @@ bind_cols(
 ) %>% metrics(Exited, .pred_class, .pred_No) %>% 
   dplyr::select(-2) %>%
   rename(`Miara dopasowania` = .metric, Oszacowanie = .estimate) %>% 
-  mutate(Oszacowanie = round(Oszacowanie, 2)) %>% 
+  mutate(Oszacowanie = round(Oszacowanie, 3)) %>% 
   kable("markdown")
 ```
 
@@ -237,3 +237,46 @@ Pomimo zastosowania pomniejszonego drzewa model gwarantuje skuteczną klasyfikac
 
 ### Porównanie metod klasyfikacji
 
+Poniżej zostaną porównane miary dopasowania dla wszystkich 3 modeli.
+
+```{r,echo=FALSE}
+predict_dfs %>% 
+  map2(names(predict_dfs),
+    ~ metrics(.x, Exited, .pred_class, .pred_No) %>% 
+      dplyr::select(-2) %>% 
+      rename(!!.y := .estimate)
+  ) %>% reduce(.f = ~ inner_join(.x, .y, by = ".metric"), .dir = "backward") %>% 
+  mutate_if(is.numeric, ~ round(.x, 3)) %>% 
+  rename(`Miara dopasowania` = .metric) %>% 
+  kable("markdown")
+
+```
+
+Porównując surowe miary dopasowania najskuteczniejszym klasyfikatorem okazuje się las losowy na danych surowych, który osiąga najlepszy wynik w 3 z 4 kategorii przegrywając tylko w jednej kategorii z pojedynczym drzewem. Modele wykorzystające dane przekształcone, ze wszystkimi zmiennymi ilościowymi pogrupowanymi, generują zauważalnie gorszą, ale nadal dobrą klasyfikację. Jest to uzasadnione, ponieważ agregacja zmiennej ciągłej do 5 lub mniej kategorii zawsze istonie obniża ilość informacji w niej zawartej. Zaskakujący może być za to wynik pojedynczego drzewa, który osiąga prawie identyczne \textit{accuracy} oraz lepsze \textit{kappa} od lasu losowego. Logarytm błędu (\textit{mn\_log\_loss}), uwzględniający dokładne prawdopobieństwa (niezaokrąglone do postaci binarnej) jest jednak dużo wyższy, najgorszy spośród wszystkich 4 modeli. W celu uniknięcia przeuczenia pojedyncze drzewo jest przycinane, a jego wysokość ograniczona, przez co uzyskuje się dalekie od homogeniczności zbiory obserwacji w liściach. Uzasadnia to wysoki logarytm błędu pojedynczego drzewa. Dla lasów losowych prawdopobieństwa wynikają z uśrednienia 500-1000 drzew co umożliwia znaczne zniewelowanie tego problemu. Wyższy logarytm błędu pojedynczego drzewa  pozwala podejrzewać gorszą jakość klasyfikacji dla niektórych kombinacji atrybutów, nieobserwowalnych w zbiorze testowym.
+
+W dalszej części pracy zostaną przeanalizowane krzywe ROC dla uzyskanych modeli.
+
+```{r, echo=FALSE, fig.width=6, fig.height=6}
+roc_list <- predict_dfs %>% map2(names(predict_dfs), ~ roc_curve(.x, Exited, .pred_No) %>% 
+                                   mutate(.level = .y))
+
+rlang::exec(bind_rows, !!!roc_list) %>% 
+  mutate(.level = as.factor(.level)) %>% 
+  autoplot()
+```
+
+Najlepszą, najbliższą punktowi $(0,1)$ krzywą uzyskano dla lasu losowego na danych surowych, co potwierdza najwyższa wartość wskaźnika ROC AUC.
+
+```{r, echo=FALSE, fig.width=7, fig.height=7}
+rlang::exec(grid.arrange, !!!map2(models, names(predict_dfs), ~ suppressWarnings(vip(.x, aesthetics = list(fill = "#56B4E9", color = "grey30")) + ggtitle(.y))))
+```
+
+Oceny istotności zmiennych dla częściowo się pokrywają oraz są zgodne z ekspercką oceną problemu. Wiek klienta jest 1 albo 2 najistotniejszą zmienną w każdym modelu. Główną, obserwowaną różnicą są znacznie niższe istotności zmiennej \textit{NumOfProducts} dla danych kategoryzowanych. Zmienna ta w rzeczywistości posiadała bardzo silnie asymetryczny rozkład ze zdecydowaną większością obserwacji blisko zera. Spowodowało to pogrupowanie jej w raptem 2 kategorie, co z kolei może być uzasadnieniem tak dużego spadku jej wpływu na wyniki modelu. Wniosek ten pokrywa się ze wcześniejszym, płynącym z przedstawionych miar dopasowania poszczególnych modeli. Modele na danych przekształconych uzyskiwały widocznie gorsze dopasowanie i jego źródłem może być właśnie osłabienie zmiennej \textit{NumOfProducts}.
+
+## Wnioski i rekomendacje
+
+Podsumowując, można stwierdzić, że modele drzew i lasów dobrze sprawdzają się przy klasyfikacji klientów pod kątem prawdopobieństwa churnu. Dla analizowanych uzyskano wysoką, 84-86\% dokładność klasyfikacji oraz silnie wklęsłe i regularne krzywe ROC. Optymalnym modelem z punktu widzenia dokładności oraz czasu przygotowania jest las losowy na danych surowych estymowany z użyciem pakietu \textit{ranger}. Rozwiązanie to charakteryzuje się najwyższą dokładnością klasyfikacji oraz prostotą kalibracji. Liczba parametrów jest mała, a ich znaczenie bardzo intuicyjne. Ponadto optymalny wynik uzyskano na wartościach parametrów zbliżonych do początkowej oceny eksperckiej. Dokonana w ramach tej analizy kalibracja modelu modelu z użyciem automatycznego przeszukiwania przestrzeni stanów modelu okazała się w praktyce zbędna i wpłynęła na poprawę wyników tylko minimalnie. Dostępne w pakiecie R API pozwala ponadto na wygodne korzystanie z kilku różnych metod pomiaru istotności zmiennych, w tym skorygowanego współczynnika Giniego i podejścia permutacyjnego, które pozwalają na ocenę ekspercką uchwyconych przez model zależności i co za tym idzie zmniejszają skalę problemu czarnej skrzynki (ang. black-box).
+
+Z drugiej strony pojedyncze drzewo klasyfikacyjne pozwoliło na uzyskanie niewiele gorszych wyników zachowując przy tym pełną interpretowalność. Dlatego w sytuacji dużych wymagań odnośnie eksperckiej weryfikacji zachowań uzyskanego modelu, wykorzystanie pojedynczego drzewa wytrenowanego z użyciem pakietu \textit{rpart} można uznać za zasane. Problemem modelu drzewa decyzyjnego jest mniej intuicyjna parametryzacja, z racji na wykorzystanie współczynnika kosztu złożoności (\textit{cost_complexity}), którego optymalny rząd wielkości nie jest znany bez przeprowadzenia kilku prób lub zagłębienia się w dokumentację modelu. Implikuje to potrzebę dużo bardziej czasochłonnej i profesjonalnej, przeprowadzonej z użyciem odpowiednich bibliotek, kalibracji. W przeciwieństwie do lasu losowego, uzyskanie optymalnego, przedstawionego w niniejszej pracy wyniku, wymagało zastosowania ściśle określonych, nieintuicyjnych wartości parametrów, których uzyskanie w wyniku niezautomatyzowanej metody prób i błędów lub oceny eksperckiej nie było możliwe.
+
+Posumowując model pojedynczego drzewa decyzyjnego może mieć również stosunkow dużą skuteczność, zachowując przy tym pełną interpretowalność, ale okupione będzie to dużo większym nakładem pracy i wymaganiami co do umiejętności analityka, a końcowy model i tak będzie co najwyżej tak dobry jak intuicyjnie skalibrowany las losowy.

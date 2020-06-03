@@ -48,3 +48,11 @@ predict_and_bind.list <- function(fitted_models, testing_sets, spec_names) {
     )
   }) %>% set_names(spec_names)
 }
+
+# plot.roc_df <- function(df) {
+#   ggplot(df) +
+#     geom_path(aes(x = 1 - specificity, y = sensitivity)) +
+#     geom_abline(lty = 3) +
+#     coord_equal() +
+#     theme_bw()
+# }
