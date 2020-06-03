@@ -8,7 +8,7 @@ library(vip)
 
 rm(list = ls())
   
-# source("dataset_prep.R")
+source("funs_valid.R")
 
 dataset_splits <- list(
   read_rds("data/split.RDS"),
@@ -30,15 +30,7 @@ fitted_models <- dataset_splits %>%
     tibble(!!col_name := models_specs %>% map(~ .x %>%  fit(Exited ~ ., data = df)))
   })
   
-pred_dfs <- list(fitted_models, testing_sets, spec_names) %>% pmap_dfc(function(models_by_spec, df, spec_name) {
-  tibble(!!spec_name := 
-           models_by_spec %>% map(function(model) {
-             df %>% bind_cols(
-               model %>% predict(df),
-               model %>% predict(df, type = "prob")
-             )
-           }))
-})
+pred_dfs <- predict_and_bind(fitted_models, testing_sets, spec_names)
 
-fitted_models %>% write_rds("data/fitted_models.RDS", compress = "bz2")
-pred_dfs %>% write_rds("data/predictions.RDS", compress = "bz2")
+# fitted_models %>% write_rds("data/fitted_models.RDS", compress = "bz2")
+# pred_dfs %>% write_rds("data/predictions.RDS", compress = "bz2")

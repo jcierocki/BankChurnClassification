@@ -15,6 +15,8 @@ library(ranger)
 library(xgboost)
 library(vip)
 library(knitr)
+library(rpart)
+library(rpart.plot)
 
 rm(list = ls())
 
@@ -25,10 +27,23 @@ tree_model_full <- read_rds("../data/tree_model1.rds")
 tree_model_simple <- read_rds("../data/tree_model2.rds")
 ranger_models <- read_rds("../data/fitted_models.RDS")
 xgboost_model <- read_rds("../data/fitted_xgboost.RDS")
-df_preds_ranger <- read_rds("../data/predictions.RDS")
-df_pred_xgboost <- read_rds("../data/predictions_xgboost.RDS")
+# df_preds_ranger <- read_rds("../data/predictions.RDS")
+# df_pred_xgboost <- read_rds("../data/predictions_xgboost.RDS")
 df_1 <- read_rds("../data/split.RDS")
 df_2 <- read_rds("../data/split_raw.RDS")
+
+models <- list(tree = tree_model_full, forest1 = ranger_models$model_1[[1]], 
+            forest2 = ranger_models$model_2[[1]], gbm = xgboost_model)
+
+test_dfs <- list(tree = df_2, forest1 = df_1, forest2 = df_2, gbm = df_1) %>% map(~ testing(.x))
+
+test_dfs$gbm <- test_dfs$gbm %>%
+  mutate_if(~ length(levels(.x)) > 2, as.integer) %>%
+  mutate_at(vars(Balance), as.integer)
+
+spec_names <- c("Drzewo", "Las (uproszczone)", "Las (surowe)", "XGBoost")
+
+predict_dfs <- predict_and_bind(models, test_dfs, spec_names)
 
 ```
 
@@ -180,13 +195,45 @@ Poniżej przedstawiono parametryzację wszystkich omawianych w dalszej części 
   \item $sample\_size = 0.7$
 \end{itemize}
 
+\clearpage
+
 ## Wyniki
+
+W niniejszym rozdziale zostaną omówione i porównane wyniki modeli.
 
 ### Reguły decyzyjne w modelu uproszczonym
 
 Poniżej zostanie przeanalizowany model uproszczonego drzewa decyzyjnego:
 
-```{r}
-
+```{r, echo=FALSE}
+rpart.plot(tree_model_simple$fit, roundint = F)
 ```
+
+Na powyższym wykresie można zauważyć 4 reguły decyzyjne dotyczące 5 lub więcej procent obserwacji w zbiorze uczącym:
+\begin{enumerate}
+  \item $69\% -$ osoby młody ($< 43$ lata) i korzystające z małej liczby produktów ($< 2.5$) nie zmieniają banku
+  \item $7\% -$ aktywni klienci korzystający z 2 produktów nie zmieniają banku
+  \item $7\% -$ aktywni klienci z poza Niemiec, korzystający z 1 produktu, nie zmieniają banku
+  \item $5\% -$ aktywni klienci w podeszłym wieku ($\geq 74$ lata) zmieniają bank
+\end{enumerate}
+
+Wnioski z analizy powyższego drzewa mogą być zaskakujące. Okazuje się, że to właśnie osoby starsze częściej zmieniają dostawcę usług bankowych, podczas gdy intuicyjnie można przedstawić argumenty na poparcie przeciwnej tezy. Zmiennymi mającymi istotny wpływ na oszacowania modelu (decydują o podziałach które prowadzą do liści zawierających co najmniej 1\% zbioru uczącego) są tylko kraj pochodzenia, aktywność, wiek i liczba produktów (4 na 7). Płeć, ilość środków na końcie czy ocena wiarygodności kredytowej mają bardzo mały wpływ na decyzję klienta o zmianie dostawcy usług bankowych. Częstsze zmienianie banku przez ludzi młodych może wynikać z braku czasu i nie posiadania oszczędności, ale może być również wynikiem specyficznej polityki danego banku.
+
+\clearpage
+
+```{r,echo=FALSE}
+bind_cols(
+  test_dfs$tree,
+  tree_model_simple %>% predict(test_dfs$tree, type = "class"),
+  tree_model_simple %>% predict(test_dfs$tree, type = "prob")
+) %>% metrics(Exited, .pred_class, .pred_No) %>% 
+  dplyr::select(-2) %>%
+  rename(`Miara dopasowania` = .metric, Oszacowanie = .estimate) %>% 
+  mutate(Oszacowanie = round(Oszacowanie, 2)) %>% 
+  kable("markdown")
+```
+
+Pomimo zastosowania pomniejszonego drzewa model gwarantuje skuteczną klasyfikację dla 85,3\% zbioru testowego, przy pozostałych wskaźnikach na również akceptowalnym poziomie. W dalszej części pracy zostanie przeanalizowane na ile te wyniki można poprawić.
+
+### Porównanie metod klasyfikacji
 

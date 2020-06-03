@@ -23,3 +23,28 @@ get_all_metrics <- function(pred_dfs, spec = 1L, y_name = "Exited") {
 exportable_conf_matrix <- function(df) {
   conf_mat(df, Exited, .pred_class)$table
 }
+
+predict_and_bind <- function(fitted_models, testing_sets, spec_names) {
+  UseMethod("predict_and_bind", fitted_models)
+}
+
+predict_and_bind.tbl_df <- function(fitted_models, testing_sets, spec_names) {
+  list(fitted_models, testing_sets, spec_names) %>% pmap_dfc(function(models_by_spec, df, spec_name) {
+    tibble(!!spec_name := 
+             models_by_spec %>% map(function(model) {
+               df %>% bind_cols(
+                 model %>% predict(df),
+                 model %>% predict(df, type = "prob")
+               )
+             }))
+  })
+}
+
+predict_and_bind.list <- function(fitted_models, testing_sets, spec_names) {
+  map2(fitted_models, testing_sets, function(model, df) {
+    df %>% bind_cols(
+      model %>% predict(df),
+      model %>% predict(df, type = "prob")
+    )
+  }) %>% set_names(spec_names)
+}

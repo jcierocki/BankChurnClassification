@@ -15,7 +15,7 @@ source("funs_valid.R")
 
 dataset_split <- readRDS("data/split.RDS")
 dataset_split$data <-  dataset_split$data %>%
-  mutate_if(~ length(levels(.x)) > 3, as.integer) %>%
+  mutate_if(~ length(levels(.x)) > 2, as.integer) %>%
   mutate_at(vars(Balance), as.integer)
 
 # dataset_split <- readRDS("data/split_raw.RDS")
