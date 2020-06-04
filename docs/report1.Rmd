@@ -86,7 +86,7 @@ Jakub Cierocki \& Szymon Reddig \\
 
 Zjawisko tzw. ,,customer churn'' (ang. \textit{churn} - odpływ, rezygnacja), czyli rezygnacji klienta z subskrypcji usług danego przedsiębiorstwa, jest w kręgu zainteresowania naukowców od wielu lat.
 
-Do modelowania churnu stosuje się m.in. metody analizy przetrwania (jak długo klient będzie odnawiał subskrybcję) oraz klasyfikacji binarnej (czy klient w niedługiej przyszłości zmieni dostawcę usług). W niniejszym raporcie zajmiemy się drugim z ww. zagadnień.
+Do modelowania churnu stosuje się m.in. metody analizy przetrwania (jak długo klient będzie odnawiał subskrybcję) oraz klasyfikacji binarnej (czy klient w niedługiej przyszłości zmieni dostawcę usług). W niniejszym raporcie zajmiemy się drugim z ww. zagadnień. 
 
 Firmy, a w szczególności telekomy, ubezpieczyciele oraz banki, inwestują w modelowanie tego zjawiska, gdyż pozyskiwanie nowych klientów jest często o wiele droższym zabiegiem, niż utrzymanie dotychczasowych, a dynamika ich liczby jest kluczowa przy modelowaniu procesów biznesowych. Przykładowo, jeśli Spotify (dostawca usługi streamowania muzyki) zidentyfikowałoby segment osób, które z dużym prawdopobieństwem zrezygnują niedługo z subskrypcji, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich oferty. Z drugiej strony powiązanie nielojalności konsumenckiej z atrybutami konkretnej podgrupy klientów może pomóc w racjonalizacji kosztów przeznaczonych na reklamę i projektowanie produktów przeznaczonych dla jej przedstawicieli. W przypadku m.in. telekomów subskrypcje abonamentowe stanowią podstawowe źródło dochodów przedsiębiorstwa i ich odpowiednie prognozowanie ich dynamiki jest niezbędne w procesie prognozowania przychodów przedsiębiorstwa.
 
@@ -135,7 +135,9 @@ Jak widać na powyższym wykresie są obserwowane liniowe zależności między u
 
 ## Metodologia
 
-W pracy zostaną porównane 4 modele:
+W literaturze pojawia wiele metod podejścia do tematu modelowania churnu. Według Clemente et al. (2012), optymalnym podejście są klasyczne drzewa decyzyjne, a metody bardziej złożone, wykorzystujące kombinacje wielu klasyfikatorów (m.in. lasy) nie są wcale bardziej skuteczne, a wymagają dużo większej mocy obliczeniowej do oszacowania.
+
+W niniejszej pracy zostaną porównane 4 modele:
 \begin{itemize}
   \item drzewo decyzyjne CART na danych surowych (pakiet \textit{rpart})
   \item las losowy na danych przekształconych (pakiet \textit{ranger})
@@ -237,7 +239,7 @@ Pomimo zastosowania pomniejszonego drzewa model gwarantuje skuteczną klasyfikac
 
 ### Porównanie metod klasyfikacji
 
-Poniżej zostaną porównane miary dopasowania dla wszystkich 3 modeli.
+Poniżej zostaną porównane miary dopasowania dla wszystkich 3 modeli. Każdorazowo będą one szacowane tylko na zbiorze testowym.
 
 ```{r,echo=FALSE}
 predict_dfs %>% 
@@ -280,3 +282,18 @@ Podsumowując, można stwierdzić, że modele drzew i lasów dobrze sprawdzają 
 Z drugiej strony pojedyncze drzewo klasyfikacyjne pozwoliło na uzyskanie niewiele gorszych wyników zachowując przy tym pełną interpretowalność. Dlatego w sytuacji dużych wymagań odnośnie eksperckiej weryfikacji zachowań uzyskanego modelu, wykorzystanie pojedynczego drzewa wytrenowanego z użyciem pakietu \textit{rpart} można uznać za zasane. Problemem modelu drzewa decyzyjnego jest mniej intuicyjna parametryzacja, z racji na wykorzystanie współczynnika kosztu złożoności (\textit{cost_complexity}), którego optymalny rząd wielkości nie jest znany bez przeprowadzenia kilku prób lub zagłębienia się w dokumentację modelu. Implikuje to potrzebę dużo bardziej czasochłonnej i profesjonalnej, przeprowadzonej z użyciem odpowiednich bibliotek, kalibracji. W przeciwieństwie do lasu losowego, uzyskanie optymalnego, przedstawionego w niniejszej pracy wyniku, wymagało zastosowania ściśle określonych, nieintuicyjnych wartości parametrów, których uzyskanie w wyniku niezautomatyzowanej metody prób i błędów lub oceny eksperckiej nie było możliwe.
 
 Posumowując model pojedynczego drzewa decyzyjnego może mieć również stosunkow dużą skuteczność, zachowując przy tym pełną interpretowalność, ale okupione będzie to dużo większym nakładem pracy i wymaganiami co do umiejętności analityka, a końcowy model i tak będzie co najwyżej tak dobry jak intuicyjnie skalibrowany las losowy.
+
+## Bibliografia
+
+\begin{enumerate}
+  \item Churn Modelling: classification data set, (2019), https://www.kaggle.com/shrutimechlearn/churn-modelling?fbclid=IwAR1TKm\_ApyyoqMxi\_UhPo1\_KoHLXp42da6v28shxjkDFjhwV4d9HdnkfRis, data dotępu: 05.05.2020
+  \item Clemente, M., V. Giner-Bosch, S. Matías, (2012), Assessing classification methods for churn prediction by composite indicators.
+  \item R Core Team, (2020), R: A language and
+  environment for statistical computing, \textit{R Foundation for Statistical Computing}, Vienna, Austria, https://www.R-project.org/.
+  \item Wickham, H., M. Averick, J. Bryan, W. Chang, L. Mcgowan, R. François, \dots H. Yutani, (2019), Welcome to the Tidyverse, \textit{Journal of Open Source Software}, 4(43), 1686, doi: 10.21105/joss.01686
+  \item Wright, M. N. \& A. Ziegler, (2017), ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R, \textit{Journal of Statistical Software}, 77(1), s. 1-7, doi:10.18637/jss.v077.i01
+  \item Chen, T. \& C. Guestrin, (2016), XGBoost: A Scalable Tree Boosting System, \textit{Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining}, s. 785-794, doi:10.1145/2939672.2939785
+\end{enumerate}
+
+
+  
