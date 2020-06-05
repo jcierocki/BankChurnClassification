@@ -94,7 +94,7 @@ Do klasyfikacji wykorzystano 3 typy modeli: drzewa, lasy losowe oraz GBM (XGBoos
 
 Najlepszym klasyfikatorem okazał się las losowy wytrenowany z użyciem pakietu \textit{ranger}, który pozwala uzyskać dokładność klasyfikacji (TP + FN) na poziomie około 86\% bez konieczności stosowania automatycznej kalibracji. Wykazano ponadto, że niewiele gorzej radzi sobie pojedyncze drzewo CART uzyskując zbliżoną dokładność klasyfikacji przy zachowaniu pełnej interpretowalności modelu.
 
-Spośród zaobserwowanych reguł decyzyjnych na szczególną uwagę wskazuje dodatnia zależność między wiekiem, a prawdopodobieństwem rezynacji z usług banku. Wiernymi klientami są głównie osoby młode o małej liczbie produktów bankowych z Francji i Hiszpanii. Z kolei osoby starsze, o większej liczbie subsrybowanych usług, aktywnie korzystające ze swojego konta są bardziej skłonne do zmiany banku.
+Spośród zaobserwowanych reguł decyzyjnych na szczególną uwagę wskazuje dodatnia zależność między wiekiem, a prawdopodobieństwem rezynacji z usług banku. Wiernymi klientami są głównie osoby młode o małej liczbie produktów bankowych z Francji i Hiszpanii. Z kolei osoby starsze, o większej liczbie subskrybowanych usług, aktywnie korzystające ze swojego konta są bardziej skłonne do zmiany banku.
 
 ## Wprowadzenie
 
@@ -102,11 +102,11 @@ Zjawisko tzw. ,,customer churn'' (ang. \textit{churn} - odpływ, rezygnacja), cz
 
 Do modelowania churnu stosuje się m.in. metody analizy przetrwania (jak długo klient będzie odnawiał subskrypcję?) oraz klasyfikacji binarnej (czy klient w niedługiej przyszłości zmieni dostawcę usług?). W niniejszym raporcie zajmiemy się drugim z ww. zagadnień. 
 
-Firmy, a w szczególności telekomy, ubezpieczyciele oraz banki, inwestują w modelowanie tego zjawiska, gdyż pozyskiwanie nowych klientów jest często o wiele droższym zabiegiem, niż utrzymanie dotychczasowych, a dynamika ich liczby jest kluczowa przy modelowaniu procesów biznesowych. Przykładowo, jeśli Spotify (dostawca usługi streamowania muzyki) zidentyfikowałoby segment osób, które z dużym prawdopodobieństwem zrezygnują niedługo z subskrypcji, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcających ich do dalszego korzystania z ich oferty. Z drugiej strony powiązanie nielojalności konsumenckiej z atrybutami konkretnej podgrupy klientów może pomóc w racjonalizacji kosztów przeznaczonych na reklamę i projektowaniu produktów przeznaczonych dla jej przedstawicieli. W przypadku m.in. telekomów subskrypcje abonamentowe stanowią podstawowe źródło dochodów przedsiębiorstwa i ich odpowiednie prognozowanie ich dynamiki jest niezbędne w procesie prognozowania przychodów przedsiębiorstwa.
+Firmy, a w szczególności telekomy, ubezpieczyciele oraz banki, inwestują w modelowanie tego zjawiska, gdyż pozyskiwanie nowych klientów jest często o wiele droższym zabiegiem, niż utrzymanie dotychczasowych, a dynamika ich liczby jest kluczowa przy modelowaniu procesów biznesowych. Przykładowo, jeśli Spotify (dostawca usługi streamowania muzyki) zidentyfikowałoby segment osób, które z dużym prawdopodobieństwem zrezygnują niedługo z subskrypcji, przedsiębiorstwo mogłoby zasypać ich specjalnymi ofertami, zachęcającymi do dalszego korzystania z ich oferty. Z drugiej strony powiązanie nielojalności konsumenckiej z atrybutami konkretnej podgrupy klientów może pomóc w racjonalizacji kosztów przeznaczonych na reklamę i projektowaniu produktów przeznaczonych dla jej przedstawicieli. W przypadku m.in. telekomów subskrypcje abonamentowe stanowią podstawowe źródło dochodów przedsiębiorstwa i odpowiednie prognozowanie ich dynamiki jest niezbędne w procesie prognozowania przychodów przedsiębiorstwa.
 
 ## Problem badawczy
 
-Zjawisko ,,churnu'' będzie analizowane z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Celem niniejszej pracy będzie zbadanie czy na podstawie tych danych bank jest w stanie przewidzieć przyszłe decyzje o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
+Zjawisko ,,churnu'' będzie analizowane z perspektywy banku. Dysponuje on pewnymi danymi personalnymi swoich klientów oraz pełną informacją o ich aktualnej (i przeszłej) subskrypcji usług tego banku. Celem niniejszej pracy będzie zbadanie czy na podstawie tych danych bank jest w stanie przewidywać decyzje o rezygnacji z jego usług w niedalekiej (bliżej nie określonej) przyszłości.
 
 ## Zbiór danych
 
@@ -120,7 +120,7 @@ Wykorzystany zbiór deskryptorów liczy łącznie 10 zmiennych, które opisują 
   \item \textit{Geography} - kraj pochodzenia, zmienna kategoryzowana, skala nominalna
   \item \textit{Gender} - płeć, zmienna binarna, 1 - mężczyzna
   \item \textit{HasCrCard} - posiadanie karty kredytowej, zmienna binarna, 1 - posiada
-  \item \textit{IsActiveMember} - bycie aktywnym klientem banku (korzystającym z owanych usług np. wykonującym przelewy), zmienna binarna, 1 - tak
+  \item \textit{IsActiveMember} - bycie aktywnym klientem banku (korzystającym z subskrybowanych usług, np. wykonującym przelewy), zmienna binarna, 1 - tak
   \item \textit{Age} - wiek, zmienna całkowitoliczbowa
   \item \textit{Balance} - ilość pieniędzy na koncie, zmienna liczbowa
   \item \textit{CreditScore} - ocena wiarygodności kredytowej, zmienna liczbowa
@@ -129,7 +129,7 @@ Wykorzystany zbiór deskryptorów liczy łącznie 10 zmiennych, które opisują 
   \item \textit{Tenure} - liczba lat odkąd klient zaczął korzystać z usług danego banku, zmienna całkowitoliczbowa
 \end{itemize}
 
-Surowy zbiór danych był już oczyszony i nie zawierał braków danych oraz zmiennych wymagających rekodowania. Dokonano konwersji typów na odpowiadające rzeczywistemu charakterowi zmiennych (liczbowe lub kategoryzowane). Kategoriom zmiennych jakościowych nadano odpowiednie etykiety. Zmienna \textit{Country} jako jedyna zmienna nominalna z liczbą kategorii $>2$ w zbiorze została przekonwertowana na dwie zmienne binarne \textit{CountryGermany} oraz \textit{CountrySpain}.
+Surowy zbiór danych był już oczyszony i nie zawierał braków danych oraz zmiennych wymagających rekodowania. W pierwszej kolekności dokonano konwersji typów na odpowiadające rzeczywistemu charakterowi zmiennych (liczbowe lub kategoryzowane). Kategoriom zmiennych jakościowych nadano odpowiednie etykiety. Zmienna \textit{Country} jako jedyna zmienna nominalna z liczbą kategorii $>2$ w zbiorze została przekonwertowana na dwie zmienne binarne \textit{CountryGermany} oraz \textit{CountrySpain}.
 
 Zostały wyodrębione 2 warianty zbioru danych. Pierwszy, który dalej będzie nazywany surowym, zawiera dane uwzględniające tylko ww. przekształcenia. Drugi, które będzie dalej nazywany przekształconym, zawiera wszystkie zmienne ilościowe poddane kategoryzacji. Wykorzystano w tym celu pakiet \textit{scorecard} oraz algorytm wykorzystujące drzewa do dobrania optymalnej z punktu widzenia IV (ang. \textit{Information Value}) kategoryzacji. W celu uniknięcia zaburzenia oceny istotności zmiennych w modelu na podstawie wskaźnika Giniego, maksymalna liczba kategorii została ustalona na poziomie 5. Już po konwersji, uzyskany zbiór danych przefiltrowano odrzucając zmienne, których IV było mniejsze od 0.01.
 
@@ -159,11 +159,11 @@ W niniejszej pracy zostaną porównane 4 modele:
   \item GBM na danych przekształconych (pakiet \textit{XGBoost})
 \end{itemize}
 
-Drzewo decyzyjne na danych przekształconych pominięto ponieważ kategoryzacja zmiennych służy jedynie możliwości uzyskania nieobciążonych pomiarów istotności obliczanych z użyciem wskaźnika Giniego, a w przypadku pojedynczego drzewa mamy możliwość jego podejrzenia i co za tym idzie pełną interpretowalność zmiennych. GBM na danych surowych pominięto ponieważ API pakietu XGBoost nie pozwala na oszacowanie istotności zmiennych metodą permutacyjną przy trenowaniu modelu. W tej sytuacji, zastosowanie danych surowych spowodowałoby uzyskanie obciążonych pomiarów istotności zmiennych.
+Drzewo decyzyjne na danych przekształconych pominięto ponieważ kategoryzacja zmiennych służy jedynie możliwości uzyskania nieobciążonych pomiarów istotności obliczanych z użyciem wskaźnika Giniego, a model pojedynczego drzewa jest w pełni interpretowalny i nie trzeba stosować w jego przypadku dodatowych technik analizy istotności zmiennych. GBM na danych surowych pominięto ponieważ API pakietu XGBoost nie pozwala na oszacowanie istotności zmiennych metodą permutacyjną przy trenowaniu modelu. W tej sytuacji, zastosowanie danych surowych spowodowałoby uzyskanie obciążonych pomiarów istotności zmiennych.
 
 Do zarządzania podziałem zbiorów na testowy i uczący, określania specyfikacji, trenowania oraz walidacji modeli wykorzystano rodzinę pakietów \textit{Tidymodels}, będącą następcą popularnego pakietu \textit{Caret} i rozwijaną w ramach projektu \textit{Tidyverse}, por. Wickham et al. (2019).
 
-Drzewo decyzyjne oraz lasy losowe zostały poddane kalibracji z użyciem metody przeszukiwania zachłannego wszystkich kombinacji przestrzeni parametrów. Dobrano tak odpowiednio maksymalną parametry \textit{cost_complexity} i \textit{tree_depth} dla drzewa decyzyjnego oraz \textit{mtry} i \textit{sample.fraction}. Model GBM, ze względu na dużo bardziej skomplikowaną parametryzację i większe zapotrzebowanie na moc obliczeniową, utrudniające przeszukiwanie przestrzeni kombinacji parametrów, został poddany jedynie eksperckiej kalibracji.
+Drzewo decyzyjne oraz lasy losowe zostały poddane kalibracji z użyciem metody przeszukiwania zachłannego wszystkich kombinacji przestrzeni parametrów. Dobrano tak odpowiednio parametry \textit{cost_complexity} i \textit{tree_depth} dla drzewa decyzyjnego oraz \textit{mtry} i \textit{sample.fraction} dla lasów losowych. Model GBM, ze względu na dużo bardziej skomplikowaną parametryzację i większe zapotrzebowanie na moc obliczeniową, utrudniające przeszukiwanie przestrzeni kombinacji parametrów, został poddany jedynie eksperckiej kalibracji.
 
 Ogólne własności i obserwowane w zbiorze danych zostaną omówione na przykładzie uproszczonego drzewa decyzyjnego, ale w dalszej analizie będzie wykorzystywane już większe drzewo, o optymalnych dla analizowanego zbioru danych parametrach.
 
@@ -196,7 +196,7 @@ Poniżej przedstawiono parametryzację wszystkich omawianych w dalszej części 
   \item $trees = 1000$ (łączna liczba drzew)
   \item $min\_n = 5$
   \item $return = TRUE$ (losowanie ze zwracaniem)
-  \item $sample.fraction = 0.7$ (stosunek liczby obserwacji na których uczone jest pojedyncze drzewo do liczebności całego zbioru uczącego)
+  \item $sample.fraction = 0.7$ (stosunek liczby obserwacji, na których uczone jest pojedyncze drzewo, do liczebności całego zbioru uczącego)
 \end{itemize}
 
 ### GBM
@@ -213,7 +213,7 @@ Poniżej przedstawiono parametryzację wszystkich omawianych w dalszej części 
 
 ## Wyniki
 
-W niniejszym rozdziale zostaną omówione i porównane wyniki modeli.
+W niniejszym rozdziale zostaną omówione i porównane wyniki poszczególnych modeli.
 
 ### Reguły decyzyjne w modelu uproszczonym
 
@@ -231,7 +231,7 @@ Na powyższym wykresie można zauważyć 4 reguły decyzyjne dotyczące 5 lub wi
   \item $5\% -$ aktywni klienci w podeszłym wieku ($\geq 74$ lata) zmieniają bank
 \end{enumerate}
 
-Wnioski z analizy powyższego drzewa mogą być zaskakujące. Okazuje się, że to właśnie osoby starsze częściej zmieniają dostawcę usług bankowych, podczas gdy intuicyjnie można przedstawić argumenty na poparcie przeciwnej tezy. Zmiennymi mającymi istotny wpływ na oszacowania modelu (decydują o podziałach które prowadzą do liści zawierających co najmniej 1\% zbioru uczącego) są tylko kraj pochodzenia, aktywność, wiek i liczba produktów (4 na 7). Płeć, ilość środków na końcie czy ocena wiarygodności kredytowej mają bardzo mały wpływ na decyzję klienta o zmianie dostawcy usług bankowych. Częstsze zmienianie banku przez ludzi młodych może wynikać z braku czasu i nie posiadania oszczędności, ale może być również wynikiem specyficznej polityki danego banku.
+Wnioski z analizy powyższego drzewa mogą być zaskakujące. Okazuje się, że to właśnie osoby starsze częściej zmieniają dostawcę usług bankowych, podczas gdy intuicyjnie można przedstawić argumenty na poparcie przeciwnej tezy. Zmiennymi mającymi istotny wpływ na oszacowania modelu (decydują o podziałach które prowadzą do liści zawierających co najmniej 1\% zbioru uczącego) są tylko kraj pochodzenia, aktywność, wiek i liczba produktów (4 na 7). Płeć, ilość środków na końcie czy ocena wiarygodności kredytowej mają bardzo mały wpływ na decyzję klienta o zmianie dostawcy usług bankowych. Rzadsze zmienianie banku przez ludzi młodych może wynikać z braku czasu i nie posiadania oszczędności, ale może być również wynikiem specyficznej polityki danego banku.
 
 \clearpage
 
@@ -266,7 +266,7 @@ predict_dfs %>%
 
 ```
 
-Porównując surowe miary dopasowania najskuteczniejszym klasyfikatorem okazuje się las losowy trenowany na danych surowych, który osiąga najlepszy wynik w 3 z 4 kategorii przegrywając tylko w jednej z pojedynczym drzewem. Modele wykorzystające dane przekształcone, ze wszystkimi zmiennymi ilościowymi pogrupowanymi, generują zauważalnie gorszą, ale nadal dobrą klasyfikację. Jest to uzasadnione, ponieważ agregacja zmiennej ciągłej do 5 lub mniej kategorii zawsze obniża ilość informacji w niej zawartej. Zaskakujący może być za to wynik pojedynczego drzewa, który osiąga prawie identyczne \textit{accuracy} oraz lepsze \textit{kappa} od lasu losowego. Logarytm błędu (\textit{mn\_log\_loss}), uwzględniający dokładne prawdopodobieństwa (niezaokrąglone do postaci binarnej) jest jednak dużo wyższy, najgorszy spośród wszystkich 4 modeli. W celu uniknięcia przeuczenia pojedyncze drzewo jest przycinane, a jego wysokość ograniczona, przez co uzyskuje się dalekie od homogeniczności zbiory obserwacji w liściach. Uzasadnia to wysoki logarytm błędu. Dla lasów losowych prawdopodobieństwa wynikają z uśrednienia 500-1000 drzew co umożliwia znaczne zniewelowanie tego problemu. Wyższy logarytm błędu pojedynczego drzewa  pozwala podejrzewać gorszą jakość klasyfikacji dla niektórych kombinacji atrybutów, nieobserwowalnych w zbiorze testowym.
+Porównując surowe miary dopasowania najskuteczniejszym klasyfikatorem okazuje się las losowy trenowany na danych surowych, który osiąga najlepszy wynik w 3 z 4 kategorii przegrywając tylko w jednej z pojedynczym drzewem. Modele wykorzystające dane przekształcone, ze wszystkimi zmiennymi ilościowymi pogrupowanymi, generują zauważalnie gorszą, ale nadal dobrą klasyfikację. Jest to uzasadnione, ponieważ agregacja zmiennej ciągłej do 5 lub mniej kategorii zawsze obniża ilość informacji w niej zawartej. Zaskakujący może być za to wynik pojedynczego drzewa, który osiąga prawie identyczne \textit{accuracy} oraz lepsze \textit{kappa} od lasu losowego. Logarytm błędu (\textit{mn\_log\_loss}), uwzględniający dokładne prawdopodobieństwa (niezaokrąglone do postaci binarnej), jest jednak dużo wyższy, najgorszy spośród wszystkich 4 modeli. W celu uniknięcia przeuczenia, pojedyncze drzewo jest przycinane, a jego wysokość ograniczona, przez co uzyskuje się dalekie od homogeniczności zbiory obserwacji w liściach. Uzasadnia to wysoki logarytm błędu. Dla lasów losowych prawdopodobieństwa wynikają z uśrednienia 500-1000 drzew co umożliwia znaczne zniewelowanie tego problemu. Wyższy logarytm błędu pojedynczego drzewa  pozwala podejrzewać gorszą jakość klasyfikacji dla niektórych kombinacji atrybutów, nieobserwowalnych w zbiorze testowym.
 
 W dalszej części pracy zostaną przeanalizowane krzywe ROC dla uzyskanych modeli.
 
@@ -285,15 +285,17 @@ Najlepszą, najbliższą punktowi $(0,1)$ krzywą uzyskano dla lasu losowego na 
 rlang::exec(grid.arrange, !!!map2(models, names(predict_dfs), ~ suppressWarnings(vip(.x, aesthetics = list(fill = "#56B4E9", color = "grey30")) + ggtitle(.y))))
 ```
 
-Oceny istotności zmiennych analizowanych modeli częściowo się pokrywają oraz są zgodne z ekspercką oceną problemu. Wiek klienta jest 1 albo 2 najistotniejszą zmienną w każdym modelu. Główną, obserwowaną różnicą są znacznie niższe istotności zmiennej \textit{NumOfProducts} dla danych kategoryzowanych. Zmienna ta w rzeczywistości posiadała silnie prawostronnie skośny rozkład. Spowodowało to pogrupowanie jej w raptem 2 kategorie, co z kolei może być uzasadnieniem tak dużego spadku jej wpływu na wyniki modelu. Wniosek ten pokrywa się ze wcześniejszym, płynącym z przedstawionych miar dopasowania poszczególnych modeli. Modele na danych przekształconych uzyskiwały widocznie gorsze dopasowanie i jego źródłem może być właśnie osłabienie zmiennej \textit{NumOfProducts}.
+Oceny istotności zmiennych analizowanych modeli częściowo się pokrywają oraz są zgodne z ekspercką oceną problemu. Wiek klienta jest 1 albo 2 najistotniejszą zmienną w każdym modelu. Główną, obserwowaną różnicą są znacznie niższe istotności zmiennej \textit{NumOfProducts} dla danych kategoryzowanych. Zmienna ta w rzeczywistości posiadała silnie prawostronnie skośny rozkład. Spowodowało to pogrupowanie jej w raptem 2 kategorie, co z kolei może być uzasadnieniem tak dużego spadku jej wpływu na wyniki modelu. Wniosek ten pokrywa się ze wcześniejszym, płynącym z przedstawionych miar dopasowania poszczególnych modeli. Modele na danych przekształconych uzyskiwały widocznie gorsze dopasowanie i jego źródłem może być m.in. właśnie osłabienie zmiennej \textit{NumOfProducts}.
 
 ## Wnioski i rekomendacje
 
 Podsumowując, można stwierdzić, że modele drzew i lasów dobrze sprawdzają się przy klasyfikacji klientów pod kątem prawdopodobieństwa churnu. Dla analizowanych modeli uzyskano wysoką, 84-86\% dokładność klasyfikacji oraz silnie wklęsłe i regularne krzywe ROC. Optymalnym modelem z punktu widzenia dokładności oraz czasu przygotowania jest las losowy na danych surowych estymowany z użyciem pakietu \textit{ranger}. Rozwiązanie to charakteryzuje się najwyższą dokładnością klasyfikacji oraz prostotą kalibracji. Liczba parametrów jest mała, a ich znaczenie bardzo intuicyjne. Ponadto optymalny wynik uzyskano na wartościach parametrów zbliżonych do początkowej oceny eksperckiej. Dokonana w ramach tej analizy kalibracja modelu z użyciem automatycznego przeszukiwania przestrzeni stanów modelu okazała się w praktyce zbędna w przypadku lasu losowego i wpłynęła na poprawę wyników tylko minimalnie. Dostępne w pakiecie R API pakietu \textit{ranger} pozwala ponadto na wygodne korzystanie z kilku różnych metod pomiaru istotności zmiennych, w tym skorygowanego współczynnika Giniego i podejścia permutacyjnego, które umożlwiają dokładniejszą ocenę uchwyconych przez model zależności i co za tym idzie zmniejszają skalę problemu czarnej skrzynki (ang. black-box).
 
-Z drugiej strony pojedyncze drzewo klasyfikacyjne pozwoliło na uzyskanie niewiele gorszych wyników zachowując przy tym pełną interpretowalność. Dlatego w sytuacji dużych wymagań odnośnie eksperckiej weryfikacji zachowań uzyskanego modelu, wykorzystanie pojedynczego drzewa wytrenowanego z użyciem pakietu \textit{rpart} można uznać za zasane. Problemem modelu drzewa decyzyjnego jest mniej intuicyjna parametryzacja, z racji na wykorzystanie współczynnika kosztu złożoności (\textit{cost_complexity}), którego optymalny rząd wielkości nie jest znany bez przeprowadzenia kilku próbnych estymacji lub zagłębienia się w publikację naukową, szczegółową opisującą działanie tego konkretnego algrytmu. Implikuje to potrzebę dużo bardziej czasochłonnej, zautomatyzowanej kalibracji, przeprowadzonej z użyciem odpowiednich bibliotek. W przeciwieństwie do lasu losowego, uzyskanie optymalnego, przedstawionego w niniejszej pracy wyniku, wymagało zastosowania ściśle określonych, nieintuicyjnych wartości parametrów, których uzyskanie w wyniku niezautomatyzowanej metody prób i błędów lub oceny eksperckiej nie było możliwe.
+Z drugiej strony pojedyncze drzewo klasyfikacyjne pozwoliło na uzyskanie niewiele gorszych wyników zachowując przy tym pełną interpretowalność. Dlatego w sytuacji dużych wymagań odnośnie eksperckiej weryfikacji zachowań uzyskanego modelu, wykorzystanie pojedynczego drzewa wytrenowanego z użyciem pakietu \textit{rpart} można uznać za zasane. Problemem modelu drzewa decyzyjnego jest mniej intuicyjna parametryzacja, z racji na wykorzystanie współczynnika kosztu złożoności (\textit{cost_complexity}), którego optymalny rząd wielkości nie jest znany bez przeprowadzenia kilku próbnych estymacji lub zagłębienia się w publikację naukową, szczegółową opisującą działanie tego konkretnego algorytmu. Implikuje to potrzebę dużo bardziej czasochłonnej, zautomatyzowanej kalibracji, przeprowadzonej z użyciem odpowiednich bibliotek. W przeciwieństwie do lasu losowego, uzyskanie optymalnego, przedstawionego w niniejszej pracy, wyniku wymagało zastosowania ściśle określonych, nieintuicyjnych wartości parametrów, których uzyskanie w wyniku niezautomatyzowanej metody prób i błędów lub oceny eksperckiej nie było możliwe.
 
 Posumowując model pojedynczego drzewa decyzyjnego może mieć również stosunkowo dużą skuteczność, zachowując przy tym pełną interpretowalność, ale okupione będzie to dużo większym nakładem pracy i wymaganiami co do umiejętności analityka, a końcowy model i tak będzie co najwyżej tak dobry jak intuicyjnie skalibrowany las losowy.
+
+\clearpage
 
 ## Bibliografia
 
